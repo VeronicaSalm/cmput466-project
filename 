@@ -1,0 +1,82 @@
+[33mcommit 8bc6ed23bb4f139f37897c1ee363b315b719123a[m[33m ([m[1;36mHEAD -> [m[1;32msatchel-dev[m[33m, [m[1;31morigin/satchel-dev[m[33m)[m
+Author: xiang zhang <xzhang23@ualberta.ca>
+Date:   Wed Feb 17 22:27:16 2021 -0700
+
+    changed nothing but to reverse back to original commit before merge
+
+[33mcommit f9c3445bf6c1d2e811e5278f9187badf067d6721[m
+Author: xiang zhang <xzhang23@ualberta.ca>
+Date:   Wed Feb 17 22:19:37 2021 -0700
+
+    merge from data-management
+
+[33mcommit 51aa97c086e4499da572135a1c12e89534f69285[m
+Merge: f12486e 414922b
+Author: xiang zhang <xzhang23@ualberta.ca>
+Date:   Wed Feb 17 22:13:05 2021 -0700
+
+    Merge branch 'data-management' of https://github.com/VeronicaSalm/cmput466-project into satchel-dev
+
+[33mcommit f12486e47bfc854082df5d09c629082664ed73b0[m
+Author: xiang zhang <xzhang23@ualberta.ca>
+Date:   Wed Feb 17 22:11:58 2021 -0700
+
+    "finishe writting to files"
+
+[33mcommit 414922bd38f847efe0858c4523893d04dd9eca88[m[33m ([m[1;31morigin/data-management[m[33m)[m
+Author: Noah Gergel <n.gergel1@gmail.com>
+Date:   Wed Feb 17 21:12:58 2021 -0700
+
+    initial branch commit
+
+[33mcommit d9c3272f53ff30ff6e44f3e32595b0bf2fcc9563[m
+Merge: 9831595 ea7470a
+Author: xiang zhang <xzhang23@ualberta.ca>
+Date:   Wed Feb 17 17:45:17 2021 -0700
+
+    Merge remote-tracking branch 'origin' into satchel-dev
+
+[33mcommit ea7470a64dd01ac6067e77e593a3a260728dd77b[m[33m ([m[1;32mmain[m[33m)[m
+Merge: eaebd29 86b8c65
+Author: xiang zhang <60022423+pooooobzx@users.noreply.github.com>
+Date:   Wed Feb 17 17:43:55 2021 -0700
+
+    Merge pull request #2 from VeronicaSalm/dale_dev
+    
+    Modified tokenize and normalize functions. Moved them to a separate file.
+
+[33mcommit 983159579e0c4f0adbe7e20456b91c854cb7359e[m
+Author: xiang zhang <xzhang23@ualberta.ca>
+Date:   Wed Feb 17 17:42:05 2021 -0700
+
+    delete garbage files
+
+[33mcommit 3f5719951c61cdd33c6ba39736df6540555a7e94[m
+Author: xiang zhang <xzhang23@ualberta.ca>
+Date:   Wed Feb 17 17:39:00 2021 -0700
+
+    refactor the DataManager class
+
+[33mcommit 86b8c6548b53dc5c3f507b7e091d66b39c012fe7[m[33m ([m[1;31morigin/dale_dev[m[33m)[m
+Author: Dale Yue <cadaleyu@gmail.com>
+Date:   Thu Feb 18 08:27:52 2021 +0800
+
+    Modified tokenize and normalize functions. Note: This normalization function keeps duplicates and numbers
+
+[33mcommit eaebd296e60f62324661cea5c108edbc97799589[m
+Author: Dale Yue <cadaleyu@gmail.com>
+Date:   Wed Feb 17 21:33:31 2021 +0800
+
+    Satchel created class for managing input data
+
+[33mcommit 678218d5a26ac0fe23af006166e1444268b6051f[m
+Author: Dale Yue <cadaleyu@gmail.com>
+Date:   Wed Feb 17 21:17:25 2021 +0800
+
+    Siyuan created functions for tokenization and normalization
+
+[33mcommit bae3454e46d4badc9fada9948899e957bf359cb3[m[33m ([m[1;31morigin/veronica-dev[m[33m)[m
+Author: Veronica Salm <vsalm@ualberta.ca>
+Date:   Wed Feb 3 19:03:12 2021 -0700
+
+    Initial commit
