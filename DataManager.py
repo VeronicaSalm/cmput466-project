@@ -6,7 +6,7 @@ import csv
 
 class DataManager:
 
-    def __init__(self, path):
+    def __init__(self, path, load_path=None):
 
         # each document takes up one row containing its terms. e.g. [["toekn1", "token2......"], ["token1"....]]
         self.__all_data = []
@@ -17,6 +17,24 @@ class DataManager:
         self.__data_class = []
         self.__class_space = []  # all classes's name
 
+        # if load_path is provided, load data from existing tsv files
+        if (load_path != None):
+            tsv_file = open(load_path, 'r')  # read file
+            read_tsv = csv.reader(tsv_file, delimiter="\t")
+
+            for each_row in read_tsv:
+
+                self.__data_class.append(each_row[0])  # class is first col
+                self.__all_data.append(eval(each_row[1]))
+
+                if each_row[0] in self.__classified_data.keys():
+                    self.__classified_data[each_row[0]].append(
+                        eval(each_row[1]))
+                else:
+                    self.__classified_data[each_row[0]] = [eval(each_row[1])]
+            self.__class_space = list(
+                set(self.__data_class))  # remove duplicates
+
     def loadIn(self):
         '''
         Need to be implemented: check if data are raw or already processed and stored in the disc, if so load from disc 
@@ -25,10 +43,10 @@ class DataManager:
         Return: None
         SideEffect: change class attribute 
         '''
-        self.__class_space = os.listdir(path)
+        self.__class_space = os.listdir(self.__path)
         for each in self.__class_space:
             self.__classified_data[each] = []
-            file_path = os.path.join(path, each)
+            file_path = os.path.join(self.__path, each)
 
             for f in os.listdir(file_path):
                 name = os.path.join(file_path, f)
@@ -60,10 +78,11 @@ class DataManager:
         '''
         file_name = "all_data"
         f_name = os.path.join(path, file_name)
-        out = csv.writer(f, delimiter='\t')
-        with open(f_name, "w") as f:
 
-            for i in range(size(self.__all_data)):
+        with open(f_name, "w") as f:
+            out = csv.writer(f, delimiter='\t')
+
+            for i in range(len(self.__all_data)):
                 # write into csv: each row has 2 cols, first is the class of this doc, second is tokens of this doc
                 written = [self.__data_class[i], self.__all_data[i]]
                 out.writerow(written)
