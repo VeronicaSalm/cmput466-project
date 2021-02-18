@@ -5,4 +5,4 @@
 DEBUG = True
 
 # File path for the 20newsgroup dataset.
-NEWSGROUP_PATH = './'
+NEWSGROUP_PATH = './news-data'
