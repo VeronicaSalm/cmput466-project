@@ -1,6 +1,7 @@
 import preprocess_newsgroups  # tokenazilation normalization code
 import os
 import sys
+import csv
 
 
 class DataManager:
@@ -9,7 +10,7 @@ class DataManager:
 
         # each document takes up one row containing its terms. e.g. [["toekn1", "token2......"], ["token1"....]]
         self.__all_data = []
-        self.__path = path  # path to read in datas
+        self.__path = path  # path to read in raw datas
         # dictionary keys = class, values = all documents within that class
         self.__classified_data = {}
         # class info according to each documents in self.__all_data. e.g ["sports", "political"......]
@@ -59,8 +60,15 @@ class DataManager:
 
         To be implemented 
         '''
+        file_name = "all_data"
+        f_name = os.path.join(path, file_name)
+        out = csv.writer(f, delimiter='\t')
+        with open(f_name, "w") as f:
 
-        pass
+            for i in range(size(self.__all_data)):
+                # write into csv: each row has 2 cols, first is the class of this doc, second is tokens of this doc
+                written = [self.__data_class[i], self.__all_data[i]]
+                out.writerow(written)
 
     def get_data_class(self):
         '''
