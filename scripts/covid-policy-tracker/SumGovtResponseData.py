@@ -11,7 +11,8 @@ in_fname = "data/timeseries/government_response_index.csv"
 
 # FILTER
 # Specify a list of country names to leave out (3rd column of input CSV)
-filtered = []
+# TODO if desired
+filtered = set()
 
 # OUTPUT FILE
 dest = "daily_response_sum.csv"
@@ -28,6 +29,11 @@ with open(in_fname, "r") as fobj:
     # extract all the data
     for row in reader:
         # the first few columns just have country information, which we skip
+        if row[2] in filtered:
+            # skip any countries in the filtered set
+            # note, not tested yet
+            continue
+
         for k, v in zip(headers[3:], row[3:]):
             try:
                 sums[k] += float(v)
