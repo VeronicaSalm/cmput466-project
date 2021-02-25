@@ -9,10 +9,26 @@ from collections import defaultdict
 # INPUT FILE
 in_fname = "data/timeseries/government_response_index.csv"
 
-# FILTER
-# Specify a list of country names to leave out (3rd column of input CSV)
-# TODO if desired
-filtered = set()
+# FILTER ENGLISH COUNTRIES
+# Specify a list of country names to include (3rd column of input CSV)
+# list of countries which have English as an official language
+# https://www.sheffield.ac.uk/international/english-speaking-countries
+# note: countries were removed if they did not appear in the input CSV as countries
+english_countries = {
+            "Australia",
+            "Bahamas",
+            "Barbados",
+            "Belize",
+            "Canada",
+            "Dominica",
+            "Guyana",
+            "Ireland",
+            "Jamaica",
+            "Malta",
+            "New Zealand",
+            "Trinidad and Tobago",
+            "United Kingdom",
+            "United States"}
 
 # OUTPUT FILE
 dest = "daily_response_sum.csv"
@@ -28,12 +44,10 @@ with open(in_fname, "r") as fobj:
 
     # extract all the data
     for row in reader:
-        # the first few columns just have country information, which we skip
-        if row[2] in filtered:
-            # skip any countries in the filtered set
-            # note, not tested yet
+        if row[2] not in english_countries:
             continue
 
+        # the first few columns just have country information, which we skip
         for k, v in zip(headers[3:], row[3:]):
             try:
                 sums[k] += float(v)
