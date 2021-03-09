@@ -8,9 +8,10 @@ from sklearn.datasets import fetch_20newsgroups
 from nltk.corpus import stopwords
 from nltk.tokenize import word_tokenize
 from nltk.stem import WordNetLemmatizer
-import string, nltk, csv
+import string, nltk, csv, os
 
-from settings import *
+# Project-wide constants, file paths, etc.
+import settings
 
 
 # You might get an error with nltk.
@@ -27,20 +28,20 @@ def download_newsgroup():
     so they don't need to be passed as arguments.
     '''
 
-    if DEBUG: print('Downloading newsgroup dataset.')
+    if settings.DEBUG: print('Downloading newsgroup dataset.')
 
     # Download the training and test datasets.
-    train = fetch_20newsgroups(data_home=NEWSGROUP_DIR, subset='train')
-    test = fetch_20newsgroups(data_home=NEWSGROUP_DIR, subset='test')
+    train = fetch_20newsgroups(data_home=settings.NEWSGROUP_DIR, subset='train')
+    test = fetch_20newsgroups(data_home=settings.NEWSGROUP_DIR, subset='test')
 
     # Write the class names tsv first.
-    with open(NEWSGROUP_CLASSES, 'w') as f:
+    with open(settings.NEWSGROUP_CLASSES, 'w') as f:
         fout = csv.writer(f, delimiter='\t')
         fout.writerow(train.target_names)
     
     # Next write the training data to file.
     # Each line is the true label and the document, with tabs removed.
-    with open(NEWSGROUP_TRAIN, 'w') as f:
+    with open(settings.NEWSGROUP_TRAIN, 'w') as f:
         fout = csv.writer(f, delimiter='\t')
         
         for i in range(len(train.data)):
@@ -48,7 +49,7 @@ def download_newsgroup():
             fout.writerow([target, train.data[i].replace('\t', ' ')])
 
     # Lastly, write the test data to it's file.
-    with open(NEWSGROUP_TEST, 'w') as f:
+    with open(settings.NEWSGROUP_TEST, 'w') as f:
         fout = csv.writer(f, delimiter='\t')
         
         for i in range(len(test.data)):
@@ -68,28 +69,28 @@ def load_data_newsgroup():
         - classes (list): List of all class names.
     '''
 
-    if DEBUG: print('Loading in the newsgroup dataset.')
+    if settings.DEBUG: print('Loading in the newsgroup dataset.')
 
     # First make sure the files exist on the system.
-    if not os.path.exists(NEWSGROUP_TRAIN) \
-            or not os.path.exists(NEWSGROUP_TEST) \
-            or not os.path.exists(NEWSGROUP_CLASSES):
+    if not os.path.exists(settings.NEWSGROUP_TRAIN) \
+            or not os.path.exists(settings.NEWSGROUP_TEST) \
+            or not os.path.exists(settings.NEWSGROUP_CLASSES):
         raise Exception('Can not load in training or test data, files do not exist.')
     
     # Read in the class names first.
-    with open(NEWSGROUP_CLASSES, 'r') as f:
+    with open(settings.NEWSGROUP_CLASSES, 'r') as f:
         classes = list(csv.reader(f, delimiter="\t"))[0]
         
     # Read in the training and test data next.
     train, test = [], []
 
-    with open(NEWSGROUP_TRAIN, 'r') as f:
+    with open(settings.NEWSGROUP_TRAIN, 'r') as f:
         fin = csv.reader(f, delimiter="\t")
 
         for doc in fin:
             train.append(doc)
     
-    with open(NEWSGROUP_TEST, 'r') as f:
+    with open(settings.NEWSGROUP_TEST, 'r') as f:
         fin = csv.reader(f, delimiter="\t")
 
         for doc in fin:

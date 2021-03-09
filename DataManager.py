@@ -8,7 +8,9 @@
 import os, sys, csv
 
 import newsgroup_util
-from settings import *
+
+# Project-wide constants, file paths, etc.
+import settings
 
 
 # Update the field size limit, as often the files will be too large.
@@ -52,7 +54,9 @@ class DataManager:
             self.__tokenize = newsgroup_util.tokenize_newsgroup
             self.__normalize = newsgroup_util.normalize_newsgroup
 
-            self.__train_file, self.__test_file, self.__class_file = NEWSGROUP_TRAIN, NEWSGROUP_TEST, NEWSGROUP_CLASSES
+            self.__train_file = settings.NEWSGROUP_TRAIN
+            self.__test_file = settings.NEWSGROUP_TEST
+            self.__class_file = settings.NEWSGROUP_CLASSES
         elif dataset == 'twitter':
             # TODO: Implement normalizing and tokenizing functions for twitter dataset.
             pass
@@ -86,7 +90,7 @@ class DataManager:
         for i in range(len(self.__test)):
             self.__test[i][1] = self.__normalize(self.__tokenize(self.__test[i][1]))
 
-        if DEBUG: print('Finished tokenizing and normalizing the training and test data.')
+        if settings.DEBUG: print('Finished tokenizing and normalizing the training and test data.')
 
         # For ease of reference, we are going to organize the data by class.
         self.__classified_train = { c: [] for c in self.__classes }
@@ -98,7 +102,7 @@ class DataManager:
         for doc in self.__test:
             self.__classified_test[doc[0]].append(doc[1])
 
-        if DEBUG: print('Finished loading in the dataset.')
+        if settings.DEBUG: print('Finished loading in the dataset.')
 
 
     # Below are all the getter methods for retrieving data.

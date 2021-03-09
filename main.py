@@ -4,8 +4,10 @@
 # Main entry point for the whole project.
 # --------------------------------------------------
 
-from settings import *
 from DataManager import DataManager
+
+# Project-wide constants, file paths, etc.
+import settings
 
 def main():
     '''
@@ -14,7 +16,7 @@ def main():
 
     # Just simply initialize the data manager class for the
     # newsgroup dataset and load in the data.
-    dm = DataManager(NEWSGROUP_DIR, 'newsgroup')
+    dm = DataManager(settings.NEWSGROUP_DIR, 'newsgroup')
     dm.load_data()
 
     # See class definition for all methods, however you can do stuff like:
