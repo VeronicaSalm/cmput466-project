@@ -77,6 +77,8 @@ def process_tweet_file(fpath, fdest):
     """
     cnt = 0
     bad = 0
+    dest_path = os.path.join(fdest, fpath.split('/')[-1])
+    fobj = open(dest_path, "w")
     with open(fpath, "r") as json_file:
         print("Processing '{}'...".format(fpath))
         line = json_file.readline()
@@ -92,12 +94,10 @@ def process_tweet_file(fpath, fdest):
                 # this is not a retweet or reply and there are no media elements
                 if detect_english(d["full_text"]):
                     cnt += 1
-                    dest_path = os.path.join(fdest, str(tweet_ID)+".json")
-                    with open(dest_path, "w") as fobj:
-                        tweet = {"id": tweet_ID, 
-                                  "created_at": d["created_at"], 
-                                  "full_text": d["full_text"]}
-                        print(json.dumps(tweet, indent=4), file=fobj)
+                    tweet = {"id": tweet_ID, 
+                              "created_at": d["created_at"], 
+                              "full_text": d["full_text"]}
+                    print(json.dumps(tweet), file=fobj)
 
                 """
                 lang = TextBlob(text)
@@ -117,6 +117,7 @@ def process_tweet_file(fpath, fdest):
             line = json_file.readline()
 
     print(f"Found {cnt} valid and {bad} invalid tweets.")
+    fobj.close()
 
 if __name__ == "__main__":
     args = parser.parse_args()
