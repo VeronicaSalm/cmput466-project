@@ -38,6 +38,10 @@ parser.add_argument("dest",
                     help="The destination folder where the result should be stored",
                     type = str)
 
+# Variables for index fields
+RT_STATUS = "retweeted_status"
+ENTITIES = "entities"
+
 # initialize the set of english words
 with open("words_dictionary.json", "r") as fobj:
     english_words = json.loads(fobj.read())
@@ -90,7 +94,6 @@ def detect_english(text, threshold = 0.70):
         return True
     else:
         return False
-
 
 def process_tweet_file(fpath, fdest):
     '''
