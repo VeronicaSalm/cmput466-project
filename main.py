@@ -5,7 +5,7 @@
 # --------------------------------------------------
 
 from settings import *
-from DataManager import *
+from DataManager import DataManager
 
 def main():
     '''
