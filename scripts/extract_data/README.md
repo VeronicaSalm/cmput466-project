@@ -18,7 +18,7 @@ python3 extract_tweets.py input_path start_date end_date dest
 ```
 * `input_path`: The input folder containing the unzipped .jsonl tweet files containing the original tweets. It is expected that all files in this folder have the name format `"coronavirus-tweet-id-YYYY-MM-DD-HH.jsonl"`, which allows the files to be ordered by date. This is the native file name format from the original Twitter dataset from Chen et. al. (https://github.com/echen102/COVID-19-TweetIDs), so this is a reasonable assumption.
 * `start_date`: Start date, in the format YYYY-MM-DD-HH (HH is the hour from 00 to 23). The start date is inclusive.
-* `end_date`: End date for the tweet range, in the format YYYY-MM-DD-HH. The end date must be larger than start date.
+* `end_date`: End date for the tweet range, in the format YYYY-MM-DD-HH. The end date must be larger than start date and is also inclusive.
 * `dest`: The destination folder where the output files should be stored. One file will be produced for every input hour (or, every input tweet file produces exactly one output file).
 
 The resulting `.jsonl` files contain selected fields from the input tweets in the following format:

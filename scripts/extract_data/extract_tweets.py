@@ -41,6 +41,12 @@ parser.add_argument("dest",
 # Variables for index fields
 RT_STATUS = "retweeted_status"
 ENTITIES = "entities"
+CREATED_AT = "created_at"
+FULL_TEXT = "full_text"
+MEDIA = "media"
+URLS = "urls"
+REPLY = "in_reply_to_user_id"
+ID = "id"
 
 # initialize the set of english words
 with open("words_dictionary.json", "r") as fobj:
@@ -122,18 +128,19 @@ def process_tweet_file(fpath, fdest):
         while line:
             d = json.loads(line)
 
-            tweet_ID = d["id"]
+            tweet_ID = d[ID]
 
-            # Check for replies
-            if d["in_reply_to_user_id"] == None and len(d[ENTITIES]["urls"]) == 0 \
-                    and "media" not in d[ENTITIES] and RT_STATUS not in d:
+            # Check that this is not a retweet / reply and that it contains no
+            # no media elements or urls.
+            if d[REPLY] == None and len(d[ENTITIES][URLS]) == 0 \
+                    and MEDIA not in d[ENTITIES] and RT_STATUS not in d:
                 # this is not a retweet or reply and there are no media elements
-                if detect_english(d["full_text"]):
+                if detect_english(d[FULL_TEXT]):
                     # this tweet is classified as English, so store it to the output
                     cnt += 1
-                    tweet = {"id": tweet_ID,
-                              "created_at": d["created_at"],
-                              "full_text": d["full_text"]}
+                    tweet = {ID: tweet_ID,
+                             CREATED_AT: d[CREATED_AT],
+                             FULL_TEXT: d[FULL_TEXT]}
                     print(json.dumps(tweet), file=fobj)
 
             else:
