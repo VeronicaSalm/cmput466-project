@@ -142,6 +142,9 @@ def process_tweet_file(fpath, fdest):
                              CREATED_AT: d[CREATED_AT],
                              FULL_TEXT: d[FULL_TEXT]}
                     print(json.dumps(tweet), file=fobj)
+                else:
+                    # this is an invalid tweet
+                    bad += 1
 
             else:
                 # this is an invalid tweet
