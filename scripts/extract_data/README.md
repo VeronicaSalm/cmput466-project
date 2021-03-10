@@ -32,7 +32,7 @@ Each tweet is stored on a separate line of the output file(s).
 
 ## extract_tweets.sh
 
-This script runs `extract_tweets.py` multiple times to extract all tweets for our dataset, storing them in folders in the TwitterDataset repository. This script uses relative paths which would need to be changed if the script were to be run again.
+This script runs `extract_tweets.py` multiple times to extract all tweets for our dataset, storing them in folders in the TwitterDataset repository (https://github.com/VeronicaSalm/TwitterDataset). This script uses relative paths which would need to be changed if the script were to be run again.
 
 #### Running Instructions
 ```
