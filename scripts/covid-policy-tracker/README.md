@@ -1,4 +1,4 @@
-### Covid Policy Tracker Scripts
+# Covid Policy Tracker Scripts
 
 This folder contains two scripts used to summarize Covid-19 lockdown information.
 
@@ -9,7 +9,7 @@ To measure lockdown intensity, we utilize the global government response data fr
 * economic support index (all E indicators)
 Our project uses the overall government response index (https://github.com/OxCGRT/covid-policy-tracker/blob/master/data/timeseries/government_response_index.csv) to measure the level of government response in each country. Because we want to analyze only English tweets, we only consider the government response (on each day since the start of the pandemic) for predominantly English-speaking countries (https://www.sheffield.ac.uk/international/english-speaking-countries). Thus, we make the assumption that the majority of the English tweets in our dataset probably originate from predominantly English-speaking countries.    
 
-### sum_govt_response_data.py
+## sum_govt_response_data.py
 
 This script sums the global response index for all predominantly English-speaking countries for every day since Jan 1, 2020. Note that some cells in the input may be NULL - these are ignored by this script for the purpose of summing.
 
@@ -21,7 +21,7 @@ The result CSV will be stored in `csvs/daily_response_sum.csv`, unless the `dest
 * Date: the given date in the format DDMmmYYYY (e.g., 01Jan2020)
 * Global Govt Response (Sum): the sum of the government response data for all countries on this date
 
-### weekly_totals.py
+## weekly_totals.py
 
 This script further aggregates the daily government response index sums into weekly sums. It must be run **after** the above script `sum_govt_response_data.py`. The source and destination CSVs can be changed by modifiying `in_fname` and `dest` on lines 12 and 15.      
 
@@ -34,5 +34,5 @@ The result CSV will be stored in `csvs/weekly_response_sum.csv`, unless the `des
 * Date: the given date in the format DDMmmYYYY (e.g., 01Jan2020)
 * Global Govt Response (Sum): the sum of the government response data for all countries on this week
 
-### Images
+## Images
 A PNG image has been generated from the resulting data: `images/Week Number, English (Normalized) and All (Normalized).png`, a line plot of the weekly global response sum for every week of the pandemic, comparing the response of English speaking countries to the line of all countries. This image was used to find points of interest for our analysis. An original PNG image (with only the line for all countries) was created first and is also included: `images/Global Govt Response (Sum) vs. Week Number.png`.
