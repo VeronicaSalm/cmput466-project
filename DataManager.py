@@ -58,8 +58,15 @@ class DataManager:
             self.__test_file = settings.NEWSGROUP_TEST
             self.__class_file = settings.NEWSGROUP_CLASSES
         elif dataset == 'twitter':
-            # TODO: Implement normalizing and tokenizing functions for twitter dataset.
-            pass
+            # TODO: Incorporate downloading and loading functions.
+            # self.__download = twitter_util.download_twitter
+            # self.__load_data = twitter_util.load_data_twitter
+            self.__tokenize = twitter_util.tokenize_twitter
+            self.__normalize = twitter_util.normalize_twitter
+
+            # self.__train_file = settings.TWITTER_TRAIN
+            # self.__test_file = settings.TWITTER_TEST
+            # self.__class_file = settings.TWITTER_CLASSES
 
 
     def load_data(self, download=False):
