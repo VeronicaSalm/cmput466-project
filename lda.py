@@ -19,7 +19,7 @@ import sklearn
 import matplotlib.pyplot as plt
 
 
-def show_topics(vectorizer=vectorizer, lda_model=lda_model, n_words=20):
+def show_topics(vectorizer, lda_model, n_words=20):
     '''
     List feature words for each topics
 
@@ -39,7 +39,7 @@ def show_topics(vectorizer=vectorizer, lda_model=lda_model, n_words=20):
 
 
 def change_color(val):
-     '''
+    '''
     helper function to change the color of the display for result
 
     Arguments:
@@ -53,7 +53,7 @@ def change_color(val):
 
 
 def bold(val):
-     '''
+    '''
     helper function to set the result bold 
 
    Arguments:
