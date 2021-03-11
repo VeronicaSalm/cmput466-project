@@ -92,10 +92,10 @@ class DataManager:
         # We now want to tokenize and normalize our data.
         # Loop through the training and test data and update each document.
         for i in range(len(self.__train)):
-            self.__train[i][1] = self.__normalize(self.__tokenize(self.__train[i][1]))
+            self.__train[i][1] = ' '.join(self.__normalize(self.__tokenize(self.__train[i][1])))
         
         for i in range(len(self.__test)):
-            self.__test[i][1] = self.__normalize(self.__tokenize(self.__test[i][1]))
+            self.__test[i][1] = ' '.join(self.__normalize(self.__tokenize(self.__test[i][1])))
 
         if settings.DEBUG: print('Finished tokenizing and normalizing the training and test data.')
 
