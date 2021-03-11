@@ -21,6 +21,75 @@ import settings
 # nltk.download('wordnet')
 
 
+def get_confusion_matrix(generated_topics, real_topics):
+    '''
+    Gives a confusion matrix for a set of generated topics. 
+    Generated based on assigning real topics using the assign_topics function.
+
+    Arguments:
+        - generated_topics (list): The generated topics for each document. 
+        generated_topics[i] is the generated topic of the i'th document in the corpus.
+        - real_topics (list): The real topics for each document, as labelled in the dataset.
+        real_topics[i] is the real topic of the i'th document in the corpus.
+
+        The dimensions of generated_topics and real_topics should match.
+    
+    Returns:
+        The confusion matrix out, represented as a dict mapping tuples to counts.
+        out[(topicA, topicB)] is the number of documents predicted as topicA that are actually topicB
+    '''
+    assigned_topics = assign_topics(generated_topics, real_topics)
+
+    out = dict()
+    for real_topic in set(real_topics):
+        for real_topic2 in set(real_topics):
+            out[(real_topic, real_topic2)] = 0
+
+    for generated_topic, real_topic in zip(generated_topics, real_topics):
+        out[(assigned_topics[generated_topic], real_topic)] += 1
+    
+    return out
+
+
+def assign_topics(generated_topics, real_topics):
+    '''
+    Assign real names in a "heuristic" manner to auto generated topics.
+    For each generated topic, assign it to the real topic that is most often assigned to it, throwing out real topics that we have aalready assigned. 
+
+    Arguments:
+        - generated_topics (list): The generated topics for each document. 
+        generated_topics[i] is the generated topic of the i'th document in the corpus.
+        - real_topics (list): The real topics for each document, as labelled in the dataset.
+        real_topics[i] is the real topic of the i'th document in the corpus.
+
+        The dimensions of generated_topics and real_topics should match.
+    
+    Returns:
+        A dict mapping values in generated_topics to values in real_topics.
+    '''
+    out = dict()
+    used_real_topics = set()
+    for topic in set(generated_topics):
+        real_topic_count = dict()
+        for real_topic in set(real_topics):
+            real_topic_count[real_topic] = 0
+        for generated_topic, real_topic in zip(generated_topics, real_topics):
+            if generated_topic == topic:
+                real_topic_count[real_topic] += 1
+        
+        # sort in descending order by value
+        sorted_counts = sorted(real_topic_count.items(), key = lambda x: -x[1])
+        
+        for real_topic, count in sorted_counts:
+            if real_topic not in used_real_topics:
+                # if we haven't used this topic, then use it and mark it so we don't use it again
+                out[topic] = real_topic 
+                used_real_topics.add(real_topic)
+                break
+        
+    return out
+
+
 def download_newsgroup():
     '''
     Download the newsgroup data to be later loaded.
