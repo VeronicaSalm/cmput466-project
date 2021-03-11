@@ -6,6 +6,7 @@ import re
 import nltk
 
 from DataManager import DataManager
+from newsgroup_util import get_confusion_matrix
 
 # Sklearn
 from sklearn.decomposition import LatentDirichletAllocation, TruncatedSVD
@@ -122,6 +123,52 @@ df_document_topic = pd.DataFrame(
 
 dominant_topic = np.argmax(df_document_topic.values, axis=1)
 df_document_topic['dominant_topic'] = dominant_topic
+
+print(dominant_topic)
+
+real_topics = [x[0] for x in dm.get_all_data()]
+
+print(real_topics)
+
+conf_mat = get_confusion_matrix(dominant_topic, real_topics)
+
+acc_num = 0
+acc_denom = 0
+for key in conf_mat:
+    acc_denom += conf_mat[key]
+    if key[0] == key[1]:
+        acc_num += conf_mat[key]
+print("accuracy =", acc_num/acc_denom)
+
+total_prec = 0
+total_recall = 0
+
+for real_topic in set(real_topics):
+    numerator = 0
+    prec_denom = 0
+    recall_denom = 0
+    for key in conf_mat:
+        if key[0] == real_topic == key[1]:
+            numerator += conf_mat[key]
+            prec_denom += conf_mat[key]
+            recall_denom += conf_mat[key]
+        elif key[0] == real_topic:
+            prec_denom += conf_mat[key]
+        elif key[1] == real_topic:
+            recall_denom += conf_mat[key]
+    if prec_denom != 0:
+        print(real_topic, "precision =", numerator/prec_denom)
+        total_prec += numerator/prec_denom
+    if recall_denom != 0:
+        print(real_topic, "recall =", numerator/recall_denom)
+        total_recall += numerator/recall_denom
+
+print("avg precision =", total_prec/20)
+print("avg recall =", total_recall/20)
+
+
+    
+
 
 
 
