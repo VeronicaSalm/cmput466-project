@@ -31,8 +31,8 @@ def download_newsgroup():
     if settings.DEBUG: print('Downloading newsgroup dataset.')
 
     # Download the training and test datasets.
-    train = fetch_20newsgroups(data_home=settings.NEWSGROUP_DIR, subset='train')
-    test = fetch_20newsgroups(data_home=settings.NEWSGROUP_DIR, subset='test')
+    train = fetch_20newsgroups(data_home=settings.NEWSGROUP_DIR, subset='train', remove=('headers', 'footers'))
+    test = fetch_20newsgroups(data_home=settings.NEWSGROUP_DIR, subset='test', remove=('headers', 'footers'))
 
     # Write the class names tsv first.
     with open(settings.NEWSGROUP_CLASSES, 'w') as f:
