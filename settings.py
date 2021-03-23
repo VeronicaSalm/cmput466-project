@@ -19,3 +19,9 @@ NEWSGROUP_CLASSES = os.path.join(NEWSGROUP_DIR, 'newsgroup_classes.tsv')
 TWITTER_TRAIN = os.path.join(TWITTER_DIR, 'twitter_train.tsv')
 TWITTER_TEST = os.path.join(TWITTER_DIR, 'twitter_test.tsv')
 TWITTER_CLASSES = os.path.join(TWITTER_DIR, 'twitter_classes.tsv')
+
+# Modes for fold creation
+ROUND_ROBIN = 0
+RANDOM = 1
+EVEN_SPLIT = 2
+

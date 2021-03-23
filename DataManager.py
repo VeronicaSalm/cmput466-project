@@ -17,11 +17,6 @@ import settings
 # Update the field size limit, as often the files will be too large.
 csv.field_size_limit(sys.maxsize)
 
-# Modes for fold creation
-ROUND_ROBIN = 0
-RANDOM = 1
-EVEN_SPLIT = 2
-
 class DataManager:
     '''
     Class for loading in and managing data.
@@ -272,7 +267,7 @@ class DataManager:
         division = len(lst) / float(n)
         return [ lst[int(round(division * i)): int(round(division * (i + 1)))] for i in range(n) ]
 
-    def divide_into_folds(self, k, mode=ROUND_ROBIN):
+    def divide_into_folds(self, k, mode=settings.ROUND_ROBIN):
         """
         Divide the training data into k folds.
 
@@ -286,7 +281,7 @@ class DataManager:
                                 split points
                 All three modes attempt to divide the datapoints as evenly as possible.
         """
-        if mode not in {ROUND_ROBIN, RANDOM, EVEN_SPLIT}:
+        if mode not in {settings.ROUND_ROBIN, settings.RANDOM, settings.EVEN_SPLIT}:
             print("Error: Invalid mode value provided for division of training data into folds for cross validation.")
             print(f"Please use one of ROUND_ROBIN={ROUND_ROBIN}, RANDOM={RANDOM}, or EVEN_SPLIT={EVEN_SPLIT}.")
             sys.exit()
@@ -299,22 +294,17 @@ class DataManager:
         # the ith fold is a list of indices to training elements
         # this is done rather than shuffling the documents themselves, as it's likely faster
         # not to store and pass around copies of long documents
-        if mode == ROUND_ROBIN:
+        if mode == settings.ROUND_ROBIN:
             # assign the ith datapoint to fold i%k
             self.__folds = [[] for i in range(k)]
             for i in range(len(self.__train)):
                 self.__folds[i%k].append(i)
-        elif mode == RANDOM:
+        elif mode == settings.RANDOM:
             # First shuffle the list randomly, then partition
             indices = list(range(len(self.__train)))
             random.shuffle(indices)
             self.__folds = self._partition(indices, k)
-        elif mode == EVEN_SPLIT:
+        elif mode == settings.EVEN_SPLIT:
             # simply partition the list without shuffling
             indices = list(range(len(self.__train)))
             self.__folds = self._partition(indices, k)
-
-    def set_dummy_data(self):
-        # TODO: remove this before making PR
-        self.__train = [(1, chr(i)) for i in range(ord("A"), ord("Z")+1)]
-        self.__test = [(1, chr(i)) for i in range(ord("a"), ord("z")+1)]

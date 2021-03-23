@@ -24,7 +24,8 @@ def main():
     #    ROUND_ROBIN = 0
     #    RANDOM = 1
     #    EVEN_SPLIT = 2 (simple partition)
-    dm.divide_into_folds(5, 1)
+    # The default mode is ROUND_ROBIN.
+    dm.divide_into_folds(5, settings.RANDOM)
 
     # Cross Validation Example
     best_param = None
