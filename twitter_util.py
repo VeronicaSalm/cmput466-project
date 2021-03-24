@@ -37,21 +37,21 @@ def tokenize_twitter(text, remove_stopwords=False):
     Arguments:
         - text (string): The text to tokenize.
         - remove_stopwords (boolean): Flag for if we should remove stopwords or not.
-    
+
     Return Values:
         - (list): The tokenized text.
     '''
-    
+
     # First, use a simple regex to remove the URLs. Then tokenize the text.
     # We remove URLs here as it'll be more difficult to do this when we normalize.
     text = re.sub(r"http\S+", "", text)
     tokens = word_tokenize(text)
-    
+
     # Handle stopwords if needed.
     if remove_stopwords:
         s_words = set(stopwords.words('english'))
         tokens = list(filter(lambda x: x not in s_words, tokens))
-    
+
     return tokens
 
 
@@ -64,7 +64,7 @@ def normalize_twitter(tokens):
 
     Arguments:
         - tokens (list): The tokens to normalize.
-    
+
     Return Values:
         - (list): The normalized tokens.
 
@@ -75,3 +75,4 @@ def normalize_twitter(tokens):
 
     lemmatizer = WordNetLemmatizer()
     return [lemmatizer.lemmatize(token.lower()) for token in tokens if (token not in string.punctuation) and (token.encode("ascii", "ignore").decode())]
+
