@@ -54,3 +54,4 @@ if __name__ == "__main__":
             writer.writerow([i+1, k, sums[k]])
 
     print(f"Done! Results stored to {dest}.")
+

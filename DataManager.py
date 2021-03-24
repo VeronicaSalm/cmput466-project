@@ -73,6 +73,9 @@ class DataManager:
         self.__num_folds = None
         self.__validation = None
 
+        # Printed whenever a fold methods are called before divide_into_folds
+        self.__no_folds_exception_msg = "You cannot call a fold-related method as divide_into_folds has not yet been called on this instance."
+
 
     def load_data(self, download=False):
         '''
@@ -167,7 +170,7 @@ class DataManager:
         This will be useful to calculate the conditional probability, i.e. P(words | class).
 
         Arguments:
-            - class_name (string): The class name we want to retrieve Gdata of.
+            - class_name (string): The class name we want to retrieve data of.
             - test (boolean): Flag for if it should come from the training or test data.
         '''
 
@@ -208,7 +211,7 @@ class DataManager:
             (list): the list of training data points from all folds except validation.
         """
         if self.__num_folds == None:
-            raise Exception("You cannot call a fold-related method as divide_into_folds has not yet been called on this instance.")
+            raise Exception(self.__no_folds_exception_msg)
         data = []
         for f in range(self.__num_folds):
             if f == self.__validation:
@@ -227,7 +230,7 @@ class DataManager:
             (list): the list of training data points from the validation fold.
         """
         if self.__num_folds == None:
-            raise Exception("You cannot call a fold-related method as divide_into_folds has not yet been called on this instance.")
+            raise Exception(self.__no_folds_exception_msg)
 
         f = self.__validation
         return [self.__train[self.__folds[f][i]] for i in range(len(self.__folds[f]))]
@@ -241,7 +244,7 @@ class DataManager:
             - idx (int): 0 <= idx < self.__num_folds, the index of the new validation fold
         """
         if self.__num_folds == None:
-            raise Exception("You cannot call a fold-related method as divide_into_folds has not yet been called on this instance.")
+            raise Exception(self.__no_folds_exception_msg)
         if not (0 <= idx < self.__num_folds):
             raise ValueError("The validation set index must be in the range [0, k), where k is the number of folds.")
         self.__validation = idx
@@ -250,9 +253,11 @@ class DataManager:
         """
         Returns the number of folds.
         """
+        if self.__num_folds == None:
+            raise Exception(self.__no_folds_exception_msg)
         return self.__num_folds
 
-    def _partition(self, lst, n):
+    def __partition(self, lst, n):
         """
         Partition the list lst into n roughly equal parts.
 
@@ -263,6 +268,8 @@ class DataManager:
         Returns:
             (list): the list of lists representing the partitions
         """
+        # Ensure that the number of parts is at least 2
+        assert(n >= 2)
         # From: https://stackoverflow.com/questions/3352737/how-to-randomly-partition-a-list-into-n-nearly-equal-parts
         division = len(lst) / float(n)
         return [ lst[int(round(division * i)): int(round(division * (i + 1)))] for i in range(n) ]
@@ -282,9 +289,9 @@ class DataManager:
                 All three modes attempt to divide the datapoints as evenly as possible.
         """
         if mode not in {settings.ROUND_ROBIN, settings.RANDOM, settings.EVEN_SPLIT}:
-            print("Error: Invalid mode value provided for division of training data into folds for cross validation.")
-            print(f"Please use one of ROUND_ROBIN={ROUND_ROBIN}, RANDOM={RANDOM}, or EVEN_SPLIT={EVEN_SPLIT}.")
-            sys.exit()
+            exception_msg = "Invalid mode value provided for division of training data into folds for cross validation.\n"
+            exception_msg += f"Please use one of ROUND_ROBIN={settings.ROUND_ROBIN}, RANDOM={settings.RANDOM}, or EVEN_SPLIT={settings.EVEN_SPLIT}."
+            raise Exception(exception_msg)
 
         # we have k folds, and currently the first fold is our validation set
         self.__num_folds = k
@@ -303,8 +310,9 @@ class DataManager:
             # First shuffle the list randomly, then partition
             indices = list(range(len(self.__train)))
             random.shuffle(indices)
-            self.__folds = self._partition(indices, k)
+            self.__folds = self.__partition(indices, k)
         elif mode == settings.EVEN_SPLIT:
             # simply partition the list without shuffling
             indices = list(range(len(self.__train)))
-            self.__folds = self._partition(indices, k)
+            self.__folds = self.__partition(indices, k)
+

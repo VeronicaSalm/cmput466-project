@@ -71,3 +71,4 @@ if __name__ == "__main__":
             writer.writerow([k, sums[k]])
 
     print(f"Done! Results stored to {dest}. Total errors found: {errors}.")
+
