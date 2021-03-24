@@ -19,9 +19,46 @@ def main():
     dm = DataManager(settings.NEWSGROUP_DIR, 'newsgroup')
     dm.load_data()
 
-    # See class definition for all methods, however you can do stuff like:
-    print(dm.get_label(0))
-    # To get a particular label, etc.
+    # Call this method to divide the data into folds
+    # There are three modes:
+    #    ROUND_ROBIN = 0
+    #    RANDOM = 1
+    #    EVEN_SPLIT = 2 (simple partition)
+    # The default mode is ROUND_ROBIN.
+    dm.divide_into_folds(5, settings.RANDOM)
+
+    # Cross Validation Example
+    best_param = None
+    best_accuracy = 0
+    possible_param_values = [1, 2, 3]
+
+    # Run cross validation once for each parameter value
+    for param in possible_param_values:
+
+        # We will create a list of accuracies for each validation set
+        accuracies = []
+        for i in range(dm.get_num_folds()):
+            # Update the validation fold.
+            dm.set_validation(i)
+
+            # Retrieve the training data and validation set.
+            train = dm.get_all_fold_data()
+            validation = dm.get_all_validation_data()
+
+            # Train the model with the param choice.
+            results = None
+            # Compute the resulting accuracy on the validation set.
+            accuracy = 0.3*param # fake values for demo
+
+            accuracies.append(accuracy)
+
+        avg_accuracy = sum(accuracies) / len(accuracies)
+
+        if avg_accuracy > best_accuracy:
+            best_accuracy = avg_accuracy
+            best_param = param
+
+    print(f"Best accuracy found was {best_accuracy} with parameter value {best_param}")
 
 
 # Entry point to the program.
