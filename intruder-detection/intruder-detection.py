@@ -49,6 +49,9 @@ def generate_testcase(topics, t, n):
         - intruder (string): the word chosen as the intruder
         - intruder_t (string): the id of the intruder topic
     """
+    # assert that there are at least two words in this testcase
+    assert(n >= 2)
+
     # from the other topics, choose one to be the source of the intruder
     other_topics = [i for i in topics.keys() if i != t]
     intruder_t = random.choice(other_topics)
@@ -173,13 +176,12 @@ if __name__ == "__main__":
         correct = display(testcase, intruder)
 
         # Loop until we get a valid answer
-        done = False
-        while not done:
+        valid_input = False
+        while not valid_input:
             r = input("Select the intruder: ")
-            done = check_input(r, testcase)
+            valid_input = check_input(r, testcase)
 
         # Check if the intruder was found
-        # TODO: store the result
         if int(r) == correct:
             print("Correct!")
             stats[t][CORRECT] += 1
