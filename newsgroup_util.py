@@ -36,12 +36,12 @@ def get_recall(conf_mat):
     for topic in set(topics):
         rec_num = 0
         rec_denom = 0
-        for key in conf_mat:
-            if key[0] == topic == key[1]:
-                rec_num += conf_mat[key]
-                rec_denom += conf_mat[key]
-            elif key[1] == topic:
-                rec_denom += conf_mat[key]
+        for (predicted, actual) in conf_mat:
+            if predicted == topic == actual:
+                rec_num += conf_mat[(predicted, actual)]
+                rec_denom += conf_mat[(predicted, actual)]
+            elif actual == topic:
+                rec_denom += conf_mat[(predicted, actual)]
         if rec_denom == 0:
             out[topic] = 0
         else:
@@ -64,12 +64,12 @@ def get_precision(conf_mat):
     for topic in set(topics):
         prec_num = 0
         prec_denom = 0
-        for key in conf_mat:
-            if key[0] == topic == key[1]:
-                prec_num += conf_mat[key]
-                prec_denom += conf_mat[key]
-            elif key[0] == topic:
-                prec_denom += conf_mat[key]
+        for (predicted, actual) in conf_mat:
+            if predicted == topic == actual:
+                prec_num += conf_mat[(predicted, actual)]
+                prec_denom += conf_mat[(predicted, actual)]
+            elif predicted == topic:
+                prec_denom += conf_mat[(predicted, actual)]
         if prec_denom == 0:
             out[topic] = 0
         else:
