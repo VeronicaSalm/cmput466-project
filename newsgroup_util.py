@@ -21,6 +21,84 @@ import settings
 # nltk.download('wordnet')
 
 
+def get_recall(conf_mat):
+    '''
+    Given a confusion matrix, returns the recall of each topic.
+
+    Arguments:
+        - conf_mat (dictionary with tuples as keys and integers as values): The confusion matrix.
+
+    Returns:
+        A dictionary where the keys are topics and the values are the corresponding recall.
+    '''
+    topics = set([key[0] for key in conf_mat])
+    out = dict()
+    for topic in set(topics):
+        rec_num = 0
+        rec_denom = 0
+        for key in conf_mat:
+            if key[0] == topic == key[1]:
+                rec_num += conf_mat[key]
+                rec_denom += conf_mat[key]
+            elif key[1] == topic:
+                rec_denom += conf_mat[key]
+        if rec_denom == 0:
+            out[topic] = 0
+        else:
+            out[topic] = rec_num / rec_denom
+    return out
+
+
+def get_precision(conf_mat):
+    '''
+    Given a confusion matrix, returns the precision of each topic.
+
+    Arguments:
+        - conf_mat (dictionary with tuples as keys and integers as values): The confusion matrix.
+
+    Returns:
+        A dictionary where the keys are topics and the values are the corresponding precision.
+    '''
+    topics = set([key[0] for key in conf_mat])
+    out = dict()
+    for topic in set(topics):
+        prec_num = 0
+        prec_denom = 0
+        for key in conf_mat:
+            if key[0] == topic == key[1]:
+                prec_num += conf_mat[key]
+                prec_denom += conf_mat[key]
+            elif key[0] == topic:
+                prec_denom += conf_mat[key]
+        if prec_denom == 0:
+            out[topic] = 0
+        else:
+            out[topic] = prec_num / prec_denom
+    return out
+
+
+def get_accuracy(conf_mat):
+    '''
+    Given a confusion matrix, returns the accuracy.
+
+    Arguments:
+        - conf_mat (dictionary with tuples as keys and integers as values): The confusion matrix.
+
+    Returns:
+        The accuracy of the confusion matrix.
+    '''
+    acc_num = 0
+    acc_denom = 0
+    for key in conf_mat:
+        acc_denom += conf_mat[key]
+        if key[0] == key[1]:
+            acc_num += conf_mat[key]
+    if acc_denom == 0:
+        return 0
+    else:
+        return acc_num / acc_denom
+
+
 def get_confusion_matrix(generated_topics, real_topics):
     '''
     Gives a confusion matrix for a set of generated topics. 
