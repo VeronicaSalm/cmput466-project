@@ -163,10 +163,12 @@ print("avg recall =", total_recall/20)
 
 
 # Topic - Keywords DataFrame
+TopicNumberToTopicName = assign_topics(dominant_topic, real_topics)
 topic_keywords = show_topics(vectorizer=tfidf_vectorizer, nmf_model=nmf, n_words=15)
 frequent_words = pd.DataFrame(topic_keywords)
 frequent_words.columns = ['Word ' + str(i)
                           for i in range(frequent_words.shape[1])]
-frequent_words.index = ['Topic ' + str(i)
+frequent_words.index = [TopicNumberToTopicName[i]
                         for i in range(frequent_words.shape[0])]
 print(frequent_words)
+
