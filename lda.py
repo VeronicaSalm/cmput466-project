@@ -6,7 +6,7 @@ import re
 import nltk
 
 from DataManager import DataManager
-from newsgroup_util import get_confusion_matrix
+from newsgroup_util import get_confusion_matrix, assign_topics
 
 # Sklearn
 from sklearn.decomposition import LatentDirichletAllocation, TruncatedSVD
@@ -185,8 +185,10 @@ topic_keywords = show_topics(
     vectorizer=vectorizer, lda_model=lda_model, n_words=15)
 
 # Topic - Keywords Dataframe
+TopicNumberToTopicName = assign_topics(dominant_topic, real_topics)
 frequent_words = pd.DataFrame(topic_keywords)
 frequent_words.columns = ['Word ' + str(i)
                           for i in range(frequent_words.shape[1])]
-frequent_words.index = ['Topic ' + str(i)
+frequent_words.index = [TopicNumberToTopicName[i]
                         for i in range(frequent_words.shape[0])]
+print(frequent_words)
