@@ -1,6 +1,7 @@
 # Testing NMF
 
 import numpy as np
+import pandas as pd
 
 from sklearn.feature_extraction.text import TfidfVectorizer, CountVectorizer
 from sklearn.decomposition import NMF
@@ -8,6 +9,26 @@ from sklearn.datasets import fetch_20newsgroups
 
 from DataManager import DataManager
 import settings
+
+def show_topics(vectorizer, nmf_model, n_words = 20):
+    """
+    List feature words for each topic
+
+    Arguments:
+        - vectorizer (Class): vectorizer of NMF class
+        - nmf_model (sklearn.nmf): an instance of trained data
+        - n_words: number of words to extract for each topic
+    
+    Return Values:
+        - (list): Theh feature keywords for each topic
+    """
+    keywords = np.array(vectorizer.get_feature_names())
+    topic_keywords = []
+    for topic_weights in nmf_model.components_:
+        topic_keyword_locs = (-topic_weights).argsort()[:n_words]
+        topic_keywords.append(keywords.take(topic_keyword_locs))
+    return topic_keywords
+
 
 def get_confusion_matrix(generated_topics, real_topics):
     '''
@@ -139,3 +160,13 @@ for real_topic in set(real_topics):
 
 print("avg precision =", total_prec/20)
 print("avg recall =", total_recall/20)
+
+
+# Topic - Keywords DataFrame
+topic_keywords = show_topics(vectorizer=tfidf_vectorizer, nmf_model=nmf, n_words=15)
+frequent_words = pd.DataFrame(topic_keywords)
+frequent_words.columns = ['Word ' + str(i)
+                          for i in range(frequent_words.shape[1])]
+frequent_words.index = ['Topic ' + str(i)
+                        for i in range(frequent_words.shape[0])]
+print(frequent_words)
