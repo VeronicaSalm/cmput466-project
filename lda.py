@@ -1,4 +1,5 @@
 
+from sklearn.decomposition import LatentDirichletAllocation
 import settings
 import numpy as np
 import pandas as pd
@@ -59,7 +60,7 @@ def bold(val):
 
    Arguments:
         - val(int): a system setting value used to decide the font weight  
-    
+
     Return Values:
         - (string): a format string 
     '''
@@ -67,11 +68,10 @@ def bold(val):
     return 'font-weight: {weight}'.format(weight=weight)
 
 
-# load in the data with dataManager class 
+# load in the data with dataManager class
 dm = DataManager(settings.NEWSGROUP_DIR, 'newsgroup')
 dm.load_data()
 processed_data = [each[1] for each in dm.get_all_data()]
-
 
 
 vectorizer = CountVectorizer(analyzer='word',
@@ -124,11 +124,9 @@ df_document_topic = pd.DataFrame(
 dominant_topic = np.argmax(df_document_topic.values, axis=1)
 df_document_topic['dominant_topic'] = dominant_topic
 
-print(dominant_topic)
 
 real_topics = [x[0] for x in dm.get_all_data()]
 
-print(real_topics)
 
 conf_mat = get_confusion_matrix(dominant_topic, real_topics)
 
@@ -167,18 +165,8 @@ print("avg precision =", total_prec/20)
 print("avg recall =", total_recall/20)
 
 
-    
-
-
-
-
-
-
 df_document_topics = df_document_topic.head(
     100).style.applymap(change_color).applymap(bold)
-
-
-
 
 
 topic_keywords = show_topics(
@@ -192,3 +180,62 @@ frequent_words.columns = ['Word ' + str(i)
 frequent_words.index = [TopicNumberToTopicName[i]
                         for i in range(frequent_words.shape[0])]
 print(frequent_words)
+
+# Define Search Param
+search_params = {'n_components': [10, 15, 20,
+                                  25, 30], 'learning_decay': [.5, .7, .9]}
+
+# Init the Model
+lda = LatentDirichletAllocation()
+
+# Init Grid Search Class
+model = GridSearchCV(lda, param_grid=search_params)
+
+# Do the Grid Search
+model.fit(data_vectorized)
+
+
+GridSearchCV(cv=None, error_score='raise',
+             estimator=LatentDirichletAllocation(batch_size=128, doc_topic_prior=None,
+                                                 evaluate_every=-1, learning_decay=0.7, learning_method=None,
+                                                 learning_offset=10.0, max_doc_update_iter=100, max_iter=10,
+                                                 mean_change_tol=0.001, n_components=10, n_jobs=1,
+                                                 n_components=None, perp_tol=0.1, random_state=None,
+                                                 topic_word_prior=None, total_samples=1000000.0, verbose=0),
+             n_jobs=1,
+             param_grid={'n_topics': [10, 15, 20, 25, 30],
+                         'learning_decay': [0.5, 0.7, 0.9]},
+             pre_dispatch='2*n_jobs', refit=True, return_train_score='warn',
+             scoring=None, verbose=0)
+
+# Best Model
+best_lda_model = model.best_estimator_
+
+# Model Parameters
+print("Best Model's Params: ", model.best_params_)
+
+# Log Likelihood Score
+print("Best Log Likelihood Score: ", model.best_score_)
+
+# Perplexity
+print("Model Perplexity: ", best_lda_model.perplexity(data_vectorized))
+
+# Get Log Likelyhoods from Grid Search Output
+n_topics = [10, 15, 20, 25, 30]
+log_likelyhoods_5 = [round(gscore.mean_validation_score)
+                     for gscore in model.cv_results_ if gscore.parameters['learning_decay'] == 0.5]
+log_likelyhoods_7 = [round(gscore.mean_validation_score)
+                     for gscore in model.cv_results_ if gscore.parameters['learning_decay'] == 0.7]
+log_likelyhoods_9 = [round(gscore.mean_validation_score)
+                     for gscore in model.cv_results_ if gscore.parameters['learning_decay'] == 0.9]
+
+# Show graph
+plt.figure(figsize=(12, 8))
+plt.plot(n_topics, log_likelyhoods_5, label='0.5')
+plt.plot(n_topics, log_likelyhoods_7, label='0.7')
+plt.plot(n_topics, log_likelyhoods_9, label='0.9')
+plt.title("Choosing Optimal LDA Model")
+plt.xlabel("Num Topics")
+plt.ylabel("Log Likelyhood Scores")
+plt.legend(title='Learning decay', loc='best')
+plt.show()

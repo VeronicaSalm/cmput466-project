@@ -5,7 +5,9 @@
 # the topic modeling algorithms, regardless of the dataset.
 # --------------------------------------------------
 
-import os, sys, csv
+import os
+import sys
+import csv
 
 import newsgroup_util
 
@@ -14,7 +16,6 @@ import settings
 
 
 # Update the field size limit, as often the files will be too large.
-csv.field_size_limit(sys.maxsize)
 
 
 class DataManager:
@@ -34,17 +35,19 @@ class DataManager:
 
         # First, raise an exception if the given dataset is invalid.
         if dataset not in ['newsgroup', 'twitter']:
-            raise Exception('Invalid dataset given. Options are: newsgroup, twitter')
+            raise Exception(
+                'Invalid dataset given. Options are: newsgroup, twitter')
 
         # Each document takes up one row containing its terms.
         # It also has the true label attached, which is possibly null.
         # For example, [(label, ["token1", "token2", ...]), (label, ["token1", ...]), ...].
         self.__train, self.__test = [], []
         self.__classified_train, self.__classified_test = {}, {}
-        self.__classes = [] # All class names.
+        self.__classes = []  # All class names.
         self.__dir = data_dir
         self.__dataset = dataset
-        self.__rm_stop = remove_stopwords # Flag for if we should remove stopwords or not.
+        # Flag for if we should remove stopwords or not.
+        self.__rm_stop = remove_stopwords
 
         # Set the appropriate function pointers for loading, normalizing, tokenizing, etc.
         # Also just set any other member variables we need for our specific dataset.
@@ -68,7 +71,6 @@ class DataManager:
             # self.__test_file = settings.TWITTER_TEST
             # self.__class_file = settings.TWITTER_CLASSES
 
-
     def load_data(self, download=False):
         '''
         Interface for loading in the dataset.
@@ -82,7 +84,7 @@ class DataManager:
         if download or not os.path.exists(self.__train_file) \
                 or not os.path.exists(self.__test_file) \
                 or not os.path.exists(self.__class_file):
-            
+
             self.__download()
 
         # Load in the data however the specific dataset needs to be done,
@@ -92,27 +94,31 @@ class DataManager:
         # We now want to tokenize and normalize our data.
         # Loop through the training and test data and update each document.
         for i in range(len(self.__train)):
-            self.__train[i][1] = ' '.join(self.__normalize(self.__tokenize(self.__train[i][1])))
-        
-        for i in range(len(self.__test)):
-            self.__test[i][1] = ' '.join(self.__normalize(self.__tokenize(self.__test[i][1])))
+            self.__train[i][1] = ' '.join(self.__normalize(
+                self.__tokenize(self.__train[i][1])))
 
-        if settings.DEBUG: print('Finished tokenizing and normalizing the training and test data.')
+        for i in range(len(self.__test)):
+            self.__test[i][1] = ' '.join(self.__normalize(
+                self.__tokenize(self.__test[i][1])))
+
+        if settings.DEBUG:
+            print('Finished tokenizing and normalizing the training and test data.')
 
         # For ease of reference, we are going to organize the data by class.
-        self.__classified_train = { c: [] for c in self.__classes }
-        self.__classified_test = { c: [] for c in self.__classes }
+        self.__classified_train = {c: [] for c in self.__classes}
+        self.__classified_test = {c: [] for c in self.__classes}
 
         for doc in self.__train:
             self.__classified_train[doc[0]].append(doc[1])
-        
+
         for doc in self.__test:
             self.__classified_test[doc[0]].append(doc[1])
 
-        if settings.DEBUG: print('Finished loading in the dataset.')
-
+        if settings.DEBUG:
+            print('Finished loading in the dataset.')
 
     # Below are all the getter methods for retrieving data.
+
     def get_label(self, i, test=False):
         '''
         Given an index i into the dataset, return that indice's label.
@@ -120,13 +126,12 @@ class DataManager:
         Arguments:
             - i (integer): Index of the document in the dataset.
             - test (boolean): Flag for if it should come from the training or test data.
-        
+
         Return Values:
             - (string): The label at index i.
         '''
 
         return (self.__test[i][0] if test else self.__train[i][0])
-    
 
     def get_text(self, i, test=False):
         '''
@@ -141,7 +146,6 @@ class DataManager:
         '''
 
         return (self.__test[i][1] if test else self.__train[i][1])
-    
 
     def get_all_data(self, test=False):
         '''
@@ -156,7 +160,6 @@ class DataManager:
 
         return (self.__test if test else self.__train)
 
-
     def get_data_by_class(self, class_name, test=False):
         '''
         Return all the data of given certain class.
@@ -168,7 +171,6 @@ class DataManager:
         '''
 
         return (self.__classified_test[class_name] if test else self.__classified_train[class_name])
-
 
     def get_data_classes(self, test=False):
         '''
@@ -182,7 +184,6 @@ class DataManager:
         '''
 
         return ([i[0] for i in self.__test] if test else [i[0] for i in self.__train])
-
 
     def get_classes(self):
         '''
