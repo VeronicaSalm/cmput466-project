@@ -5,7 +5,7 @@ import numpy as np
 import pandas as pd
 import re
 import nltk
-
+import json
 from DataManager import DataManager
 from newsgroup_util import get_confusion_matrix, assign_topics
 
@@ -239,3 +239,10 @@ plt.xlabel("Num Topics")
 plt.ylabel("Log Likelyhood Scores")
 plt.legend(title='Learning decay', loc='best')
 plt.show()
+
+# Output Json file of top n=10 words in each topic for Intruder detection
+words = {}
+for i in range(frequent_words.shape[0]):
+    words[i] = topic_keywords[i].tolist()[:10]
+with open("topic_words_lda.json", 'w') as json_file:
+    json.dump(words, json_file)
