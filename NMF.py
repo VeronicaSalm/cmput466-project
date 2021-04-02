@@ -2,7 +2,7 @@
 
 import numpy as np
 import pandas as pd
-
+import json
 from sklearn.feature_extraction.text import TfidfVectorizer, CountVectorizer
 from sklearn.decomposition import NMF
 from sklearn.datasets import fetch_20newsgroups
@@ -171,4 +171,12 @@ frequent_words.columns = ['Word ' + str(i)
 frequent_words.index = [TopicNumberToTopicName[i]
                         for i in range(frequent_words.shape[0])]
 print(frequent_words)
+
+
+# Output Json file of top n=10 words in each topic for Intruder detection
+words = {}
+for i in range(frequent_words.shape[0]):
+    words[i] = topic_keywords[i].tolist()[:10]
+with open("topic_words_nmf.json", 'w') as json_file:
+    json.dump(words, json_file)
 
