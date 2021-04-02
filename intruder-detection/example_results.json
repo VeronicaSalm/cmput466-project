@@ -1,0 +1,16 @@
+{"topic": "0", "testcase": ["game", "christian", "book", "religion", "god"], "intruder_topic": "1", "intruder": "game", "correct": true}
+{"topic": "2", "testcase": ["send", "com", "season", "edu", "repository"], "intruder_topic": "1", "intruder": "season", "correct": false}
+{"topic": "0", "testcase": ["faith", "jesus", "god", "division", "bible"], "intruder_topic": "1", "intruder": "division", "correct": false}
+{"topic": "2", "testcase": ["linux", "code", "team", "edu", "library"], "intruder_topic": "1", "intruder": "team", "correct": false}
+{"topic": "1", "testcase": ["send", "division", "softball", "game", "play"], "intruder_topic": "2", "intruder": "send", "correct": true}
+{"topic": "0", "testcase": ["bible", "god", "repository", "truth", "mary"], "intruder_topic": "2", "intruder": "repository", "correct": false}
+{"topic": "3", "testcase": ["data", "space", "play", "research", "rocket"], "intruder_topic": "1", "intruder": "play", "correct": true}
+{"topic": "0", "testcase": ["god", "jesus", "number", "christian", "faith"], "intruder_topic": "3", "intruder": "number", "correct": false}
+{"topic": "3", "testcase": ["research", "data", "number", "government", "book"], "intruder_topic": "0", "intruder": "book", "correct": false}
+{"topic": "2", "testcase": ["program", "data", "edu", "windows", "file"], "intruder_topic": "3", "intruder": "data", "correct": true}
+{"topic": "3", "testcase": ["government", "send", "number", "rocket", "space"], "intruder_topic": "2", "intruder": "send", "correct": false}
+{"topic": "1", "testcase": ["library", "softball", "games", "win", "team"], "intruder_topic": "2", "intruder": "library", "correct": false}
+{"topic": "2", "testcase": ["send", "library", "code", "win", "program"], "intruder_topic": "1", "intruder": "win", "correct": false}
+{"topic": "1", "testcase": ["points", "win", "season", "game", "file"], "intruder_topic": "2", "intruder": "file", "correct": false}
+{"topic": "3", "testcase": ["government", "research", "space", "rocket", "repository"], "intruder_topic": "2", "intruder": "repository", "correct": false}
+{"topic": "1", "testcase": ["play", "games", "windows", "win", "team"], "intruder_topic": "2", "intruder": "windows", "correct": true}
