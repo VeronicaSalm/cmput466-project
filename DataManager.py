@@ -8,6 +8,10 @@
 import os, sys, csv
 import random
 
+# sklearn
+from sklearn.decomposition import LatentDirichletAllocation
+from sklearn.feature_extraction.text import CountVectorizer
+
 import newsgroup_util
 
 # Project-wide constants, file paths, etc.
@@ -249,6 +253,7 @@ class DataManager:
             raise ValueError("The validation set index must be in the range [0, k), where k is the number of folds.")
         self.__validation = idx
 
+
     def get_num_folds(self):
         """
         Returns the number of folds.
@@ -256,6 +261,7 @@ class DataManager:
         if self.__num_folds == None:
             raise Exception(self.__no_folds_exception_msg)
         return self.__num_folds
+
 
     def __partition(self, lst, n):
         """
@@ -273,6 +279,7 @@ class DataManager:
         # From: https://stackoverflow.com/questions/3352737/how-to-randomly-partition-a-list-into-n-nearly-equal-parts
         division = len(lst) / float(n)
         return [ lst[int(round(division * i)): int(round(division * (i + 1)))] for i in range(n) ]
+
 
     def divide_into_folds(self, k, mode=settings.ROUND_ROBIN):
         """
@@ -316,3 +323,32 @@ class DataManager:
             indices = list(range(len(self.__train)))
             self.__folds = self.__partition(indices, k)
 
+
+    def run_LDA(self, data=None, doc_topic_prior=0.5, topic_word_prior=0.1,  learning_decay=0.4, learning_offset=5, batch_size=135, num_iterations=10):
+        # run LDA on the given data. defaults to the training set.
+
+        if not data: data = self.get_all_data()
+
+        if settings.DEBUG: print("Vectorizing Data...")
+        count_vect = CountVectorizer(analyzer='word',
+            min_df=10,
+            stop_words='english',
+            lowercase=True,
+            token_pattern='[a-zA-Z0-9]{3,}'
+        )
+        vectorized_data = count_vect.fit_transform([x[1] for x in data])
+
+        if settings.DEBUG: print("Running LDA...")
+        lda_model = LatentDirichletAllocation(
+            n_components=20,
+            doc_topic_prior=doc_topic_prior,
+            topic_word_prior=topic_word_prior,
+            learning_method='online',
+            learning_decay=learning_decay,
+            learning_offset=learning_offset,
+            max_iter=num_iterations,
+            batch_size=batch_size,
+        )
+        lda_model.fit(vectorized_data)
+        
+        return lda_model.transform(vectorized_data)
