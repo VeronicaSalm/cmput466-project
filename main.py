@@ -9,6 +9,25 @@ from DataManager import DataManager
 # Project-wide constants, file paths, etc.
 import settings
 
+def get_data():
+    dm = DataManager(settings.TWITTER_DIR, 'twitter')
+    print("Loading data...")
+    dm.load_data()
+    dm.divide_into_folds(10)
+    
+    # ignore everything else, just grab the strings
+    vectorizer = CountVectorizer(analyzer='word',
+                                min_df=10,                        # minimum df
+                                stop_words='english',             # remove stop words
+                                lowercase=True,
+                                token_pattern='[a-zA-Z0-9]{3,}',  # num chars > 3
+                                )
+    all_data = dm.get_all_fold_data() + dm.get_all_validation_data()
+    vectorized = vectorizer.fit_transform(x[1] for x in all_data)
+    train, validate = vectorized[:len(dm.get_all_fold_data())], vectorized[len(dm.get_all_fold_data()):]
+
+    return train, validate, dm
+
 def main():
     '''
     Driver code for the project.
@@ -17,6 +36,7 @@ def main():
     # Just simply initialize the data manager class for the
     # newsgroup dataset and load in the data.
     dm = DataManager(settings.TWITTER_DIR, 'twitter')
+    print("Loading data...")
     dm.load_data()
 
     # Call this method to divide the data into folds

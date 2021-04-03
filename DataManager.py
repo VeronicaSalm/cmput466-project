@@ -13,6 +13,7 @@ from sklearn.decomposition import LatentDirichletAllocation
 from sklearn.feature_extraction.text import CountVectorizer
 
 import newsgroup_util
+import twitter_util
 
 # Project-wide constants, file paths, etc.
 import settings
@@ -62,15 +63,10 @@ class DataManager:
             self.__test_file = settings.NEWSGROUP_TEST
             self.__class_file = settings.NEWSGROUP_CLASSES
         elif dataset == 'twitter':
-            # TODO: Incorporate downloading and loading functions.
-            # self.__download = twitter_util.download_twitter
-            # self.__load_data = twitter_util.load_data_twitter
+            self.__download = twitter_util.download_twitter
+            self.__load_data = twitter_util.load_data_twitter
             self.__tokenize = twitter_util.tokenize_twitter
             self.__normalize = twitter_util.normalize_twitter
-
-            # self.__train_file = settings.TWITTER_TRAIN
-            # self.__test_file = settings.TWITTER_TEST
-            # self.__class_file = settings.TWITTER_CLASSES
 
         # There are no folds until self.divide_into_folds(k) is called
         self.__folds = None
@@ -91,19 +87,28 @@ class DataManager:
         '''
 
         # Download the data if necessary.
-        if download or not os.path.exists(self.__train_file) \
-                or not os.path.exists(self.__test_file) \
-                or not os.path.exists(self.__class_file):
+        if self.__dataset == "newsgroups":
+            if download or not os.path.exists(self.__train_file) \
+                    or not os.path.exists(self.__test_file) \
+                    or not os.path.exists(self.__class_file):
 
-            self.__download()
+                self.__download()
 
         # Load in the data however the specific dataset needs to be done,
         # and get the training and test data, and possibly empty list of classes.
-        self.__train, self.__test, self.__classes = self.__load_data()
+        if self.__dataset == "twitter":
+            # use the path provided for the twitter dataset
+            self.__train, self.__test, self.__classes = self.__load_data(self.__dir)
+        else:
+            self.__train, self.__test, self.__classes = self.__load_data()
+
 
         # We now want to tokenize and normalize our data.
         # Loop through the training and test data and update each document.
+        print(len(self.__train))
         for i in range(len(self.__train)):
+            if i and i%10000 == 0:
+                print(i)
             self.__train[i][1] = ' '.join(self.__normalize(self.__tokenize(self.__train[i][1])))
 
         for i in range(len(self.__test)):
@@ -112,14 +117,15 @@ class DataManager:
         if settings.DEBUG: print('Finished tokenizing and normalizing the training and test data.')
 
         # For ease of reference, we are going to organize the data by class.
-        self.__classified_train = { c: [] for c in self.__classes }
-        self.__classified_test = { c: [] for c in self.__classes }
+        if self.__dataset == "newsgroups":
+            self.__classified_train = { c: [] for c in self.__classes }
+            self.__classified_test = { c: [] for c in self.__classes }
 
-        for doc in self.__train:
-            self.__classified_train[doc[0]].append(doc[1])
+            for doc in self.__train:
+                self.__classified_train[doc[0]].append(doc[1])
 
-        for doc in self.__test:
-            self.__classified_test[doc[0]].append(doc[1])
+            for doc in self.__test:
+                self.__classified_test[doc[0]].append(doc[1])
 
         if settings.DEBUG: print('Finished loading in the dataset.')
 
