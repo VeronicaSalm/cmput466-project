@@ -52,6 +52,7 @@ def load_data_twitter(twitter_dir):
 
     classes, train, test  = [], [], []
     
+    num_files = 0
     # Read in the training data next
     for f in sorted(os.listdir(twitter_dir)):
         fpath = os.path.join(twitter_dir, f)
@@ -70,8 +71,11 @@ def load_data_twitter(twitter_dir):
 
                 # get the next tweet
                 line = json_file.readline()
-            
-        break
+
+        # TODO: remove this, causes only a certain number of files to be read for testing
+        num_files += 1
+        if num_files == 1:
+            break
 
     return (train, test, classes)
 
