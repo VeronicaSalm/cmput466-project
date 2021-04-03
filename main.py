@@ -16,7 +16,7 @@ def main():
 
     # Just simply initialize the data manager class for the
     # newsgroup dataset and load in the data.
-    dm = DataManager(settings.NEWSGROUP_DIR, 'newsgroup')
+    dm = DataManager(settings.TWITTER_DIR, 'twitter')
     dm.load_data()
 
     # Call this method to divide the data into folds
@@ -25,7 +25,7 @@ def main():
     #    RANDOM = 1
     #    EVEN_SPLIT = 2 (simple partition)
     # The default mode is ROUND_ROBIN.
-    dm.divide_into_folds(5, settings.RANDOM)
+    dm.divide_into_folds(10, settings.RANDOM)
 
     # Cross Validation Example
     best_param = None
