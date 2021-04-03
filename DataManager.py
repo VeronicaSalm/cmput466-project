@@ -105,11 +105,21 @@ class DataManager:
 
         # We now want to tokenize and normalize our data.
         # Loop through the training and test data and update each document.
+        try:
+            cache_file = open("tweet_cache.txt", 'r+')
+        except:
+            cache_file = open("tweet_cache.txt", 'w+')
         print(len(self.__train))
         for i in range(len(self.__train)):
             if i and i%10000 == 0:
                 print(i)
-            self.__train[i][1] = ' '.join(self.__normalize(self.__tokenize(self.__train[i][1])))
+            cached = self.getCachedTweet(cache_file, self.__train[i][2])
+            if cached:
+                self.__train[i][1] = cached
+            else:
+                self.__train[i][1] = ' '.join(self.__normalize(self.__tokenize(self.__train[i][1])))
+                self.cacheTweet(cache_file, self.__train[i][2], self.__train[i][1])
+        cache_file.close()
 
         for i in range(len(self.__test)):
             self.__test[i][1] = ' '.join(self.__normalize(self.__tokenize(self.__test[i][1])))
@@ -128,6 +138,52 @@ class DataManager:
                 self.__classified_test[doc[0]].append(doc[1])
 
         if settings.DEBUG: print('Finished loading in the dataset.')
+
+
+    def loadCachedTweets(self, cache_file):
+        '''
+        Loads all cached tweets from cache_file into the __tweet_cache dictionary.
+
+        Arguments:
+            cache_file (file): File to read from.
+        '''
+
+        self.__tweet_cache = dict()
+        for line in cache_file.readlines():
+            tweet_id, content = line.split()[0], ' '.join(line.split()[1:])
+            self.__tweet_cache[tweet_id] = content
+
+
+    def getCachedTweet(self, cache_file, tweet_id):
+        '''
+        Gets a cached tweet based on tweet id. The resulting tweet is already normalized / tokenized.
+
+        Arguments:
+            - cache_file (file): File to read from.
+            - tweet_id  (int): The id of the tweet you want to retrieve.
+        '''
+
+        try:
+            if str(tweet_id) in self.__tweet_cache:
+                return self.__tweet_cache[str(tweet_id)]
+            else:
+                return None
+        except:
+            self.loadCachedTweets(cache_file)
+            return self.getCachedTweet(cache_file, tweet_id)
+    
+
+    def cacheTweet(self, cache_file, tweet_id, content):
+        '''
+        Gets a cached tweet based on tweet id. The resulting tweet is already normalized / tokenized.
+
+        Arguments:
+            - cache_file (file): File to write to.
+            - tweet_id  (int): The id of the tweet you want to cache.
+            - content (string): The content of the tweet you want to cache. No newlines please!
+        '''
+
+        cache_file.write(str(tweet_id) + " " + content + '\n')
 
 
     # Below are all the getter methods for retrieving data.
