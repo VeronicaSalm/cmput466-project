@@ -324,17 +324,30 @@ class DataManager:
             self.__folds = self.__partition(indices, k)
 
 
-    def run_LDA(self, data=None, doc_topic_prior=0.5, topic_word_prior=0.1,  learning_decay=0.4, learning_offset=5, batch_size=135, num_iterations=10):
+    def run_LDA(self, data=None, doc_topic_prior=0.5, topic_word_prior=0.1, learning_decay=0.4, learning_offset=5, batch_size=135, num_iterations=10):
+        """
+        Run LDA on the given data. Defaults to the training set if no data is specified.
+
+        Arguments:
+            data: Data to run on. Same format as received from get_all_data, get_all_folds, etc.
+            doc_topic_prior (float): The doc_topic_prior hyperparam.
+            topic_word_prior (float): The topic_word_prior hyperparam.
+            learning_offset (float): The learning_offset hyperparam.
+            batch_size (int): The batch_size hyperparam.
+            num_iterations (int): The number of iterations to run for.
+        
+        Returns:
+            A list of lists, the j'th element of the i'th list is the probability that the i'th document belongs to topic j. (i.e. the weighting of topic j)
+        """
         # run LDA on the given data. defaults to the training set.
 
         if not data: data = self.get_all_data()
 
         if settings.DEBUG: print("Vectorizing Data...")
-        count_vect = CountVectorizer(analyzer='word',
-            min_df=10,
-            stop_words='english',
-            lowercase=True,
-            token_pattern='[a-zA-Z0-9]{3,}'
+        count_vect = CountVectorizer(
+            min_df=2,
+            max_features=10000,
+            stop_words='english'
         )
         vectorized_data = count_vect.fit_transform([x[1] for x in data])
 
