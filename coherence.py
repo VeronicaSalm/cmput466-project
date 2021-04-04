@@ -74,4 +74,4 @@ class Coherence:
         for i in range(len(corpus)):
             split_corpus.append(corpus[i][1].split())
     
-        self.__model = gensim.models.Word2Vec(sentences = corpus, min_count = 1, vector_size = 100, window = 5, sg = 1)
+        self.__model = gensim.models.Word2Vec(sentences = split_corpus, min_count = 1, vector_size = 100, window = 5, sg = 1)
