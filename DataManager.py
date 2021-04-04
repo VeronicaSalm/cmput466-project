@@ -9,8 +9,10 @@ import os, sys, csv
 import random
 
 # sklearn
-from sklearn.decomposition import LatentDirichletAllocation
-from sklearn.feature_extraction.text import CountVectorizer
+from sklearn.decomposition import LatentDirichletAllocation, NMF
+from sklearn.feature_extraction.text import CountVectorizer, TfidfVectorizer
+
+import numpy as np
 
 import newsgroup_util
 
@@ -105,6 +107,8 @@ class DataManager:
         # Loop through the training and test data and update each document.
         for i in range(len(self.__train)):
             self.__train[i][1] = ' '.join(self.__normalize(self.__tokenize(self.__train[i][1])))
+            if " cso " in self.__train[i][1]:
+                print(self.__train[i][1])
 
         for i in range(len(self.__test)):
             self.__test[i][1] = ' '.join(self.__normalize(self.__tokenize(self.__test[i][1])))
@@ -365,7 +369,7 @@ class DataManager:
         )
         lda_model.fit(vectorized_data)
         
-        return lda_model.transform(vectorized_data)
+        return lda_model.transform(vectorized_data), lda_model, count_vect
 
 
     def run_nmf(self, data=None, alpha=1.34, beta_loss='kullback-leibler', l1_ratio=0.66, solver='mu', num_iterations=1000, num_components=20):
@@ -398,7 +402,7 @@ class DataManager:
             msg += "Please use one of: 'mu', 'cd'."
             raise Exception(msg)
         
-        if l1_ratio < 0 or l1_ration > 1:
+        if l1_ratio < 0 or l1_ratio > 1:
             raise Exception('Invalid L1 ration given for NMF.\nPlease make sure l1_ratio is in the range [0, 1].')
 
         # run NMF on the given data. defaults to the training set.
@@ -428,4 +432,14 @@ class DataManager:
         
         nmf_model.fit(vectorized_data)
         
-        return nmf_model.transform(vectorized_data)
+        return nmf_model.transform(vectorized_data), nmf_model, tfidf_vect
+
+
+    def get_top_words_per_topic(self, model, vectorizer, n_top_words):
+        # https://stackoverflow.com/questions/44208501/getting-topic-word-distribution-from-lda-in-scikit-learn
+        vocab = vectorizer.get_feature_names()
+        topic_words = {}
+        for topic, comp in enumerate(model.components_):
+            word_idx = np.argsort(comp)[::-1][:n_top_words]
+            topic_words[topic] = [vocab[i] for i in word_idx]
+        return topic_words

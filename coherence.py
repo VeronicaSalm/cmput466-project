@@ -35,7 +35,7 @@ class Coherence:
             for j in range(i+1, len(words)):
                 sim = self.getSimilarity(words[i], words[j])
                 if sim == None:
-                    return 0
+                    sim = 0
                 out += sim
         out /= (len(words)*(len(words)-1))//2
         return out
@@ -70,7 +70,8 @@ class Coherence:
         Arguments:
             corpus (List of tuples with second element being a string)
         '''
+        split_corpus = []
         for i in range(len(corpus)):
-            corpus[i] = corpus[i][1].split()
+            split_corpus.append(corpus[i][1].replace('.', ' ').replace(',', ' ').split())
     
-        self.__model = gensim.models.Word2Vec(sentences = corpus, min_count = 1, vector_size = 100, window = 5, sg = 1)
+        self.__model = gensim.models.Word2Vec(sentences = split_corpus, min_count = 1, vector_size = 100, window = 5, sg = 1)
