@@ -70,7 +70,8 @@ class Coherence:
         Arguments:
             corpus (List of tuples with second element being a string)
         '''
+        split_corpus = []
         for i in range(len(corpus)):
-            corpus[i] = corpus[i][1].split()
+            split_corpus.append(corpus[i][1].split())
     
         self.__model = gensim.models.Word2Vec(sentences = corpus, min_count = 1, vector_size = 100, window = 5, sg = 1)
