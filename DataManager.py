@@ -386,7 +386,7 @@ class DataManager:
             self.__folds = self.__partition(indices, k)
 
 
-    def run_LDA(self, data=None, doc_topic_prior=0.5, topic_word_prior=0.1, learning_decay=0.4, learning_offset=5, batch_size=135, num_iterations=10):
+    def run_lda(self, data=None, doc_topic_prior=0.5, topic_word_prior=0.1, learning_decay=0.4, learning_offset=5, batch_size=135, num_iterations=10, num_components=20):
         """
         Run LDA on the given data. Defaults to the training set if no data is specified.
 
@@ -397,6 +397,7 @@ class DataManager:
             learning_offset (float): The learning_offset hyperparam.
             batch_size (int): The batch_size hyperparam.
             num_iterations (int): The number of iterations to run for.
+            num_components (int): The number of components or topics LDA generates.
         
         Returns:
             A list of lists, the j'th element of the i'th list is the probability that the i'th document belongs to topic j. (i.e. the weighting of topic j)
@@ -415,7 +416,7 @@ class DataManager:
 
         if settings.DEBUG: print("Running LDA...")
         lda_model = LatentDirichletAllocation(
-            n_components=20,
+            n_components=num_components,
             doc_topic_prior=doc_topic_prior,
             topic_word_prior=topic_word_prior,
             learning_method='online',
@@ -427,3 +428,66 @@ class DataManager:
         lda_model.fit(vectorized_data)
         
         return lda_model.transform(vectorized_data)
+
+
+    def run_nmf(self, data=None, alpha=1.34, beta_loss='kullback-leibler', l1_ratio=0.66, solver='mu', num_iterations=1000, num_components=20):
+        """
+        Run NMF on the given data. Defaults to the training set if no data is specified.
+
+        Arguments:
+            data: Data to run on. Same format as received from get_all_data, get_all_folds, etc.
+            alpha (float): The normalization constant for NMF.
+            beta_loss (string): The beta-loss function to use.
+            l1_ratio (float): The ratio in which NMF uses L1 regularization vs. L2.
+            solver (string): Numerical solver to use for NMF.
+            num_iterations (int): The number of iterations to run for.
+            num_components (int): The number of components or topics NMF generates.
+        
+        Returns:
+            A list of lists, the j'th element of the i'th list is the probability that the i'th document belongs to topic j. (i.e. the weighting of topic j)
+        """
+
+        # First, make sure the given beta-loss and numerical solver are valid.
+        # Also make sure the L1 ratio is in [0, 1].
+        if beta_loss not in ['kullback-leibler', 'frobenius', 'itakura-saito']:
+            msg = 'Invalid beta-loss function given for NMF.\n'
+            options = "', '".join(['kullback-leibler', 'frobenius', 'itakura-saito'])
+            msg += f"Please use one of: '{options}'."
+            raise Exception(msg)
+        
+        if solver not in ['mu', 'cd']:
+            msg = 'Invalid numerical solver given for NMF.\n'
+            msg += "Please use one of: 'mu', 'cd'."
+            raise Exception(msg)
+        
+        if l1_ratio < 0 or l1_ration > 1:
+            raise Exception('Invalid L1 ration given for NMF.\nPlease make sure l1_ratio is in the range [0, 1].')
+
+        # run NMF on the given data. defaults to the training set.
+        if not data: data = self.get_all_data()
+
+        if settings.DEBUG: print('Vectorizing the data for NMF.')
+        tfidf_vect = TfidfVectorizer(
+            max_df=0.95,
+            min_df=2,
+            max_features=10000,
+            stop_words='english'
+        )
+
+        vectorized_data = tfidf_vect.fit_transform([x[1] for x in data])
+
+        if settings.DEBUG: print('Running NMF.')
+        nmf_model = NMF(
+            init='nndsvda',
+            n_components=num_components,
+            random_state=1,
+            beta_loss=beta_loss,
+            solver=solver,
+            max_iter=num_iterations,
+            alpha=alpha,
+            l1_ratio=l1_ratio
+        )
+        
+        nmf_model.fit(vectorized_data)
+        
+        return nmf_model.transform(vectorized_data)
