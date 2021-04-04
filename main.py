@@ -5,6 +5,7 @@
 # --------------------------------------------------
 
 from DataManager import DataManager
+from coherence import Coherence
 
 # Project-wide constants, file paths, etc.
 import settings
@@ -59,6 +60,13 @@ def main():
             best_param = param
 
     print(f"Best accuracy found was {best_accuracy} with parameter value {best_param}")
+
+    print("Finding coherence of some stuff:")
+    coh = Coherence()
+    coh.mapWordsToVecs(dm.get_all_data())
+    print("Coherence of 'god' and 'jesus' =", coh.getCoherence(["god", "jesus"]))
+    print("Coherence of 'god', 'jesus', and 'window' =", coh.getCoherence(["god", "jesus", "window"]))
+    print("Coherence of 'god', 'jesus', and 'windows' =", coh.getCoherence(["god", "jesus", "windows"]), "(because 'windows' is not in our corpus)")
 
 
 # Entry point to the program.
