@@ -1,7 +1,16 @@
+# --------------------------------------------------
+# coherence.py
+#
+# Coherence class, for finding coherence of topics.
+# --------------------------------------------------
+
 import gensim 
 from gensim.models import Word2Vec
 
 class Coherence:
+    '''
+    Class for finding coherence of sets of words in a corpus.
+    '''
 
     def __init__(self):
         self.__model = None
