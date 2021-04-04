@@ -52,6 +52,7 @@ class Coherence:
         except:
             return None
 
+
     def mapWordsToVecs(self, corpus):
         '''
         Initializes and trains a Word2Vec model based on the given corpus.
