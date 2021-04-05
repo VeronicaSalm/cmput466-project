@@ -9,6 +9,7 @@ import csv
 import time
 
 from DataManager import DataManager
+from coherence import Coherence
 
 # Project-wide constants, file paths, etc.
 import settings
@@ -110,6 +111,23 @@ def main():
 
     print(f"Best average likelihood found was {best_likelihood} with parameter value k={best_k}")
     fout.close()
+
+    print("Finding coherence of some stuff:")
+    coh = Coherence()
+    coh.mapWordsToVecs(dm.get_all_data())
+    print("Coherence of 'god' and 'jesus' =", coh.getCoherence(["god", "jesus"]))
+    print("Coherence of 'god', 'jesus', and 'linux' =", coh.getCoherence(["god", "jesus", "linux"]))
+    
+    print("Running NMF:")
+    _, model, vectorizer = dm.run_nmf()
+
+    print("Finding top words:")
+    top_words = dm.get_top_words_per_topic(model, vectorizer, 10)
+    print(top_words)
+
+    print("Finding coherence of each topic:")
+    for topic in top_words:
+        print(topic, coh.getCoherence(top_words[topic]))
 
 
 # Entry point to the program.
