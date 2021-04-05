@@ -16,6 +16,7 @@ from sklearn.feature_extraction.text import CountVectorizer, TfidfVectorizer
 import numpy as np
 
 import newsgroup_util
+import twitter_util
 
 # Project-wide constants, file paths, etc.
 import settings
@@ -65,15 +66,10 @@ class DataManager:
             self.__test_file = settings.NEWSGROUP_TEST
             self.__class_file = settings.NEWSGROUP_CLASSES
         elif dataset == 'twitter':
-            # TODO: Incorporate downloading and loading functions.
-            # self.__download = twitter_util.download_twitter
-            # self.__load_data = twitter_util.load_data_twitter
+            self.__download = twitter_util.download_twitter
+            self.__load_data = twitter_util.load_data_twitter
             self.__tokenize = twitter_util.tokenize_twitter
             self.__normalize = twitter_util.normalize_twitter
-
-            # self.__train_file = settings.TWITTER_TRAIN
-            # self.__test_file = settings.TWITTER_TEST
-            # self.__class_file = settings.TWITTER_CLASSES
 
         # There are no folds until self.divide_into_folds(k) is called
         self.__folds = None
@@ -84,49 +80,124 @@ class DataManager:
         self.__no_folds_exception_msg = "You cannot call a fold-related method as divide_into_folds has not yet been called on this instance."
 
 
-    def load_data(self, download=False):
+    def load_data(self, tweet_cache, download=False, download_path=None):
         '''
         Interface for loading in the dataset.
         Defaults to the specified function pointer from when the class is initialized.
 
         Arguments:
+            - tweet_cache (string): path to the tweet cache
             - download (boolean): Flag for if we should force re-downloading of the data.
+            - download_path: For Twitter dataset only, specifies the download path
         '''
 
         # Download the data if necessary.
-        if download or not os.path.exists(self.__train_file) \
-                or not os.path.exists(self.__test_file) \
-                or not os.path.exists(self.__class_file):
+        if self.__dataset == "twitter" and download:
+            if download_path == None:
+                raise Exception("Please specify a path to which the Twitter data should be downloaded.")
+            self.__download(download_path)
+        elif self.__dataset == "newsgroups" and download:
+            if not os.path.exists(self.__train_file) \
+                    or not os.path.exists(self.__test_file) \
+                    or not os.path.exists(self.__class_file):
 
-            self.__download()
+                self.__download()
+
 
         # Load in the data however the specific dataset needs to be done,
         # and get the training and test data, and possibly empty list of classes.
-        self.__train, self.__test, self.__classes = self.__load_data()
+        if self.__dataset == "twitter":
+            # use the path provided for the twitter dataset
+            self.__train, self.__test, self.__classes = self.__load_data(self.__dir)
+        else:
+            self.__train, self.__test, self.__classes = self.__load_data()
+
 
         # We now want to tokenize and normalize our data.
         # Loop through the training and test data and update each document.
-        for i in range(len(self.__train)):
-            self.__train[i][1] = ' '.join(self.__normalize(self.__tokenize(self.__train[i][1])))
-            if " cso " in self.__train[i][1]:
-                print(self.__train[i][1])
+        try:
+            # Caching tweets avoids having to re-normalize them every execution
+            cache_file = open(tweet_cache, 'r+')
+        except:
+            cache_file = open(tweet_cache, 'w+')
 
+        # Extract all tweets from the cache
+        for i in range(len(self.__train)):
+            if i and i%10000 == 0:
+                print(i)
+            cached = self.get_cached_tweet(cache_file, self.__train[i][2])
+            if cached:
+                self.__train[i][1] = cached
+            else:
+                self.__train[i][1] = ' '.join(self.__normalize(self.__tokenize(self.__train[i][1])))
+                self.cache_tweet(cache_file, self.__train[i][2], self.__train[i][1])
+        cache_file.close()
+
+        # Extract all test tweets (only for newsgroups)
         for i in range(len(self.__test)):
             self.__test[i][1] = ' '.join(self.__normalize(self.__tokenize(self.__test[i][1])))
 
         if settings.DEBUG: print('Finished tokenizing and normalizing the training and test data.')
 
         # For ease of reference, we are going to organize the data by class.
-        self.__classified_train = { c: [] for c in self.__classes }
-        self.__classified_test = { c: [] for c in self.__classes }
+        # This is only for newsgroups, the labelled dataset.
+        if self.__dataset == "newsgroups":
+            self.__classified_train = { c: [] for c in self.__classes }
+            self.__classified_test = { c: [] for c in self.__classes }
 
-        for doc in self.__train:
-            self.__classified_train[doc[0]].append(doc[1])
+            for doc in self.__train:
+                self.__classified_train[doc[0]].append(doc[1])
 
-        for doc in self.__test:
-            self.__classified_test[doc[0]].append(doc[1])
+            for doc in self.__test:
+                self.__classified_test[doc[0]].append(doc[1])
 
         if settings.DEBUG: print('Finished loading in the dataset.')
+
+
+    def load_cached_tweets(self, cache_file):
+        '''
+        Loads all cached tweets from cache_file into the __tweet_cache dictionary.
+
+        Arguments:
+            cache_file (file): File to read from.
+        '''
+
+        self.__tweet_cache = dict()
+        for line in cache_file.readlines():
+            tweet_id, content = line.split()[0], ' '.join(line.split()[1:])
+            self.__tweet_cache[tweet_id] = content
+
+
+    def get_cached_tweet(self, cache_file, tweet_id):
+        '''
+        Gets a cached tweet based on tweet id. The resulting tweet is already normalized / tokenized.
+
+        Arguments:
+            - cache_file (file): File to read from.
+            - tweet_id  (int): The id of the tweet you want to retrieve.
+        '''
+
+        try:
+            if str(tweet_id) in self.__tweet_cache:
+                return self.__tweet_cache[str(tweet_id)]
+            else:
+                return None
+        except:
+            self.load_cached_tweets(cache_file)
+            return self.get_cached_tweet(cache_file, tweet_id)
+
+
+    def cache_tweet(self, cache_file, tweet_id, content):
+        '''
+        Gets a cached tweet based on tweet id. The resulting tweet is already normalized / tokenized.
+
+        Arguments:
+            - cache_file (file): File to write to.
+            - tweet_id  (int): The id of the tweet you want to cache.
+            - content (string): The content of the tweet you want to cache. No newlines please!
+        '''
+
+        cache_file.write(str(tweet_id) + " " + content + '\n')
 
 
     # Below are all the getter methods for retrieving data.
@@ -341,7 +412,7 @@ class DataManager:
             batch_size (int): The batch_size hyperparam.
             num_iterations (int): The number of iterations to run for.
             num_components (int): The number of components or topics LDA generates.
-        
+
         Returns:
             A list of lists, the j'th element of the i'th list is the probability that the i'th document belongs to topic j. (i.e. the weighting of topic j)
         """
@@ -369,7 +440,6 @@ class DataManager:
             batch_size=batch_size,
         )
         lda_model.fit(vectorized_data)
-        
         return lda_model.transform(vectorized_data), lda_model, count_vect
 
 
@@ -385,7 +455,7 @@ class DataManager:
             solver (string): Numerical solver to use for NMF.
             num_iterations (int): The number of iterations to run for.
             num_components (int): The number of components or topics NMF generates.
-        
+
         Returns:
             A list of lists, the j'th element of the i'th list is the probability that the i'th document belongs to topic j. (i.e. the weighting of topic j)
         """
@@ -397,12 +467,12 @@ class DataManager:
             options = "', '".join(['kullback-leibler', 'frobenius', 'itakura-saito'])
             msg += f"Please use one of: '{options}'."
             raise Exception(msg)
-        
+
         if solver not in ['mu', 'cd']:
             msg = 'Invalid numerical solver given for NMF.\n'
             msg += "Please use one of: 'mu', 'cd'."
             raise Exception(msg)
-        
+
         if l1_ratio < 0 or l1_ratio > 1:
             raise Exception('Invalid L1 ration given for NMF.\nPlease make sure l1_ratio is in the range [0, 1].')
 
@@ -430,13 +500,25 @@ class DataManager:
             alpha=alpha,
             l1_ratio=l1_ratio
         )
-        
+
         nmf_model.fit(vectorized_data)
-        
+
         return nmf_model.transform(vectorized_data), nmf_model, tfidf_vect
 
 
     def get_top_words_per_topic(self, model, vectorizer, n_top_words):
+        '''
+        Extracts the top words from each topic.
+
+        Arguments:
+            - model: the LDA or NMF model
+            - vectorizer: the vectorizer (count or tf-idf) used when training the model
+            - n_top_words (int): the number of words from each topic to return.
+
+        Returns:
+            - topic_words (dict): a dictionary mapping each topic id to a list of its top
+                                  words, in decreasing order of probability.
+        '''
         # https://stackoverflow.com/questions/44208501/getting-topic-word-distribution-from-lda-in-scikit-learn
         vocab = vectorizer.get_feature_names()
         topic_words = {}
@@ -444,8 +526,17 @@ class DataManager:
             word_idx = np.argsort(comp)[::-1][:n_top_words]
             topic_words[topic] = [vocab[i] for i in word_idx]
         return topic_words
-    
-    
+
     def save_words_as_json(self, words, path):
+        '''
+        Stores the dictionary of topic words to the json file represented by path.
+        The main purpose of this function is to create the input data for intruder
+        detection.
+
+        Arguments:
+            - words (dict): the dictionary mapping topic ids to a list of the most
+                            probable words for that topic
+            - path (string): the path where the resulting json file should be stored
+        '''
         with open(path, 'w+') as json_file:
-            json.dump(words, json_file)
+            print(json.dumps(words, indent=4), file=json_file)

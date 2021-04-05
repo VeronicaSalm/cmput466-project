@@ -9,7 +9,8 @@ DEBUG = True
 # Various file paths and directories.
 PROJECT_DIR = os.path.abspath(os.getcwd())
 NEWSGROUP_DIR = os.path.join(PROJECT_DIR, 'news-data')
-TWITTER_DIR = os.path.join(PROJECT_DIR, 'twitter-data')
+TWITTER_DIR = '../TwitterDataset/data/Jan27-Feb02/'
+STOP_LIST = 'stop_list.txt'
 
 # File names we will use for the tsv files.
 NEWSGROUP_TRAIN = os.path.join(NEWSGROUP_DIR, 'newsgroup_train.tsv')

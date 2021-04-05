@@ -1,0 +1,14 @@
+Model,k,Average Likelihood,Number of Documents,Source
+LDA,5,-2722453.0034930445,211961,../TwitterDataset/data/Jan27-Feb02/
+LDA,10,-2876749.3617044156,211961,../TwitterDataset/data/Jan27-Feb02/
+LDA,15,-2992538.4391143457,211961,../TwitterDataset/data/Jan27-Feb02/
+LDA,25,-3183563.925259429,211961,../TwitterDataset/data/Jan27-Feb02/
+LDA,50,-3505967.2678734018,211961,../TwitterDataset/data/Jan27-Feb02/
+LDA,5,-1514089.846457637,104063,../TwitterDataset/data/Mar16-Mar22/
+LDA,10,-1617614.0088092468,104063,../TwitterDataset/data/Mar16-Mar22/
+LDA,15,-1693374.902119353,104063,../TwitterDataset/data/Mar16-Mar22/
+LDA,25,-1809722.654398546,104063,../TwitterDataset/data/Mar16-Mar22/
+LDA,50,-1996853.964835259,104063,../TwitterDataset/data/Mar16-Mar22/
+LDA,10,-1833220.1247649398,107478,../TwitterDataset/data/Apr27-May03/
+LDA,25,-2048467.4996464574,107478,../TwitterDataset/data/Apr27-May03/
+LDA,50,-2257092.8003781433,107478,../TwitterDataset/data/Apr27-May03/
