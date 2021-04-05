@@ -77,22 +77,29 @@ class DataManager:
         self.__no_folds_exception_msg = "You cannot call a fold-related method as divide_into_folds has not yet been called on this instance."
 
 
-    def load_data(self, download=False):
+    def load_data(self, tweet_cache, download=False, download_path=None):
         '''
         Interface for loading in the dataset.
         Defaults to the specified function pointer from when the class is initialized.
 
         Arguments:
+            - tweet_cache (string): path to the tweet cache
             - download (boolean): Flag for if we should force re-downloading of the data.
+            - download_path: For Twitter dataset only, specifies the download path
         '''
 
         # Download the data if necessary.
-        if self.__dataset == "newsgroups":
-            if download or not os.path.exists(self.__train_file) \
+        if self.__dataset == "twitter" and download:
+            if download_path == None:
+                raise Exception("Please specify a path to which the Twitter data should be downloaded.")
+            self.__download(download_path)
+        elif self.__dataset == "newsgroups" and download:
+            if not os.path.exists(self.__train_file) \
                     or not os.path.exists(self.__test_file) \
                     or not os.path.exists(self.__class_file):
 
                 self.__download()
+
 
         # Load in the data however the specific dataset needs to be done,
         # and get the training and test data, and possibly empty list of classes.
@@ -106,27 +113,31 @@ class DataManager:
         # We now want to tokenize and normalize our data.
         # Loop through the training and test data and update each document.
         try:
-            cache_file = open("tweet_cache.txt", 'r+')
+            # Caching tweets avoids having to re-normalize them every execution
+            cache_file = open(tweet_cache, 'r+')
         except:
-            cache_file = open("tweet_cache.txt", 'w+')
-        print(len(self.__train))
+            cache_file = open(tweet_cache, 'w+')
+
+        # Extract all tweets from the cache
         for i in range(len(self.__train)):
             if i and i%10000 == 0:
                 print(i)
-            cached = self.getCachedTweet(cache_file, self.__train[i][2])
+            cached = self.get_cached_tweet(cache_file, self.__train[i][2])
             if cached:
                 self.__train[i][1] = cached
             else:
                 self.__train[i][1] = ' '.join(self.__normalize(self.__tokenize(self.__train[i][1])))
-                self.cacheTweet(cache_file, self.__train[i][2], self.__train[i][1])
+                self.cache_tweet(cache_file, self.__train[i][2], self.__train[i][1])
         cache_file.close()
 
+        # Extract all test tweets (only for newsgroups)
         for i in range(len(self.__test)):
             self.__test[i][1] = ' '.join(self.__normalize(self.__tokenize(self.__test[i][1])))
 
         if settings.DEBUG: print('Finished tokenizing and normalizing the training and test data.')
 
         # For ease of reference, we are going to organize the data by class.
+        # This is only for newsgroups, the labelled dataset.
         if self.__dataset == "newsgroups":
             self.__classified_train = { c: [] for c in self.__classes }
             self.__classified_test = { c: [] for c in self.__classes }
@@ -140,7 +151,7 @@ class DataManager:
         if settings.DEBUG: print('Finished loading in the dataset.')
 
 
-    def loadCachedTweets(self, cache_file):
+    def load_cached_tweets(self, cache_file):
         '''
         Loads all cached tweets from cache_file into the __tweet_cache dictionary.
 
@@ -154,7 +165,7 @@ class DataManager:
             self.__tweet_cache[tweet_id] = content
 
 
-    def getCachedTweet(self, cache_file, tweet_id):
+    def get_cached_tweet(self, cache_file, tweet_id):
         '''
         Gets a cached tweet based on tweet id. The resulting tweet is already normalized / tokenized.
 
@@ -169,11 +180,11 @@ class DataManager:
             else:
                 return None
         except:
-            self.loadCachedTweets(cache_file)
-            return self.getCachedTweet(cache_file, tweet_id)
-    
+            self.load_cached_tweets(cache_file)
+            return self.get_cached_tweet(cache_file, tweet_id)
 
-    def cacheTweet(self, cache_file, tweet_id, content):
+
+    def cache_tweet(self, cache_file, tweet_id, content):
         '''
         Gets a cached tweet based on tweet id. The resulting tweet is already normalized / tokenized.
 
@@ -398,7 +409,7 @@ class DataManager:
             batch_size (int): The batch_size hyperparam.
             num_iterations (int): The number of iterations to run for.
             num_components (int): The number of components or topics LDA generates.
-        
+
         Returns:
             A list of lists, the j'th element of the i'th list is the probability that the i'th document belongs to topic j. (i.e. the weighting of topic j)
         """
@@ -426,7 +437,7 @@ class DataManager:
             batch_size=batch_size,
         )
         lda_model.fit(vectorized_data)
-        
+
         return lda_model.transform(vectorized_data)
 
 
@@ -442,7 +453,7 @@ class DataManager:
             solver (string): Numerical solver to use for NMF.
             num_iterations (int): The number of iterations to run for.
             num_components (int): The number of components or topics NMF generates.
-        
+
         Returns:
             A list of lists, the j'th element of the i'th list is the probability that the i'th document belongs to topic j. (i.e. the weighting of topic j)
         """
@@ -454,12 +465,12 @@ class DataManager:
             options = "', '".join(['kullback-leibler', 'frobenius', 'itakura-saito'])
             msg += f"Please use one of: '{options}'."
             raise Exception(msg)
-        
+
         if solver not in ['mu', 'cd']:
             msg = 'Invalid numerical solver given for NMF.\n'
             msg += "Please use one of: 'mu', 'cd'."
             raise Exception(msg)
-        
+
         if l1_ratio < 0 or l1_ration > 1:
             raise Exception('Invalid L1 ration given for NMF.\nPlease make sure l1_ratio is in the range [0, 1].')
 
@@ -487,7 +498,7 @@ class DataManager:
             alpha=alpha,
             l1_ratio=l1_ratio
         )
-        
+
         nmf_model.fit(vectorized_data)
-        
+
         return nmf_model.transform(vectorized_data)

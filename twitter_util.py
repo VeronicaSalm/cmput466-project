@@ -23,8 +23,17 @@ import settings
 # nltk.download('wordnet')
 
 
-def download_twitter():
-    pass
+def download_twitter(path='./TwitterDataset'):
+    '''
+    Downloads the twitter dataset from the git repository:
+        https://github.com/VeronicaSalm/TwitterDataset
+
+    Arguments:
+        - path (string): an absolute or relative path to the directory where the
+                         Twitter repository should be downloaded to, defaults to
+                         the current directory '.'
+    '''
+    os.system(f"git clone https://github.com/VeronicaSalm/TwitterDataset {path}")
 
 
 def load_data_twitter(twitter_dir):
@@ -51,12 +60,11 @@ def load_data_twitter(twitter_dir):
         raise Exception('Can not load in training data, files do not exist.')
 
     classes, train, test  = [], [], []
-    
-    num_files = 0
+
     # Read in the training data next
     for f in sorted(os.listdir(twitter_dir)):
         fpath = os.path.join(twitter_dir, f)
-        
+
         if settings.DEBUG: print(f"Loading {fpath}")
         with open(fpath, "r") as json_file:
             line = json_file.readline()
@@ -65,17 +73,13 @@ def load_data_twitter(twitter_dir):
                 tweetID = d["id"]
                 text = d["full_text"]
                 date = d["created_at"]
-                
+
                 # store the tweetID and date in case we need them later
                 train.append([None, text, tweetID, date])
 
                 # get the next tweet
                 line = json_file.readline()
-
-        # TODO: remove this, causes only a certain number of files to be read for testing
-        num_files += 1
-        if num_files == 1:
-            break
+        break
 
     return (train, test, classes)
 
@@ -104,40 +108,6 @@ def tokenize_twitter(text, remove_stopwords=False):
         tokens = list(filter(lambda x: x not in s_words, tokens))
 
     return tokens
-
-def normalize_twitter_porter(tokens):
-    """
-    Ensure all tokens are normalized.
-    Our normalization consists of:
-        - Case folding
-        - Split on '|'
-        - Remove all punctuation
-
-    Arguments:
-        tokens: a list of tokens
-
-    Returns:
-        result: a list of normalized tokens
-    """
-    stemmer = PorterStemmer()
-
-    result = []
-    punctuation_table = str.maketrans('', '', string.punctuation + "–—−—”“’‘,")  # https://stackoverflow.com/a/34294398
-
-    # make hashtags special
-    del punctuation_table[ord("#")]
-
-    for t in tokens:
-        t = t.lower()
-        # remove punctuation and convert token to lowercase
-        t = t.translate(punctuation_table)
-        if not t:
-            continue
-        else:
-            t = stemmer.stem(t)
-            result.append(t)
-
-    return result
 
 def normalize_twitter(tokens):
     '''

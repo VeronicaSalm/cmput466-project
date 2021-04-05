@@ -1,0 +1,6 @@
+Model,k,Average Likelihood,Number of Documents,Source
+LDA,5,-19973.427828743173,1008,../TwitterDataset/data/Jan27-Feb02/
+LDA,10,-21302.111278446548,1008,../TwitterDataset/data/Jan27-Feb02/
+LDA,15,-21972.39005738816,1008,../TwitterDataset/data/Jan27-Feb02/
+LDA,25,-22308.007731218997,1008,../TwitterDataset/data/Jan27-Feb02/
+LDA,50,-22941.947980798654,1008,../TwitterDataset/data/Jan27-Feb02/
