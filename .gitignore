@@ -133,3 +133,8 @@ dmypy.json
 
 # cache file
 tweet_cache.txt
+
+# caches and results
+*.cache
+*.tmp
+TwitterDataset/
