@@ -21,11 +21,14 @@ parser = argparse.ArgumentParser(
 
 parser.add_argument('--train_path', type=str, nargs='?', default = "../TwitterDataset/data/Jan27-Feb02/",
                     help='the path to the training file, defaults to ../TwitterDataset/data/Jan27-Feb02/')
-parser.add_argument('--results_path', type=str, nargs='?', default ="results/results_jan27-feb02.txt",
-                    help='the path to the results file, defaults to results/results_jan27-feb02.txt')
+parser.add_argument('--results_path', type=str, nargs='?', default ="results/results_jan27-feb02.tmp",
+                    help='the path to the results file, defaults to results/results_jan27-feb02.tmp')
 parser.add_argument('--cache_path', type=str, nargs='?', default ="tweet_cache_jan27-feb02.cache",
                     help='the path to the file where tweets were cached from a previous run, defaults to tweet_cache_jan27-feb02.cache')
 parser.add_argument('--num_folds', type=int, nargs='?', default = 10,
+                    help='the number of folds for cross validation, defaults to 10')
+
+parser.add_argument('-t', '--topic_numbers', type=int, nargs='*', default = [5, 10, 15, 25],
                     help='the number of folds for cross validation, defaults to 10')
 
 def get_data_for_LDA(dm):
@@ -109,7 +112,9 @@ def main():
     # Initialize the best k and best likelihood, along with the list of k values to try
     best_k = None
     best_likelihood = -float("inf")
-    possible_k_values = [5, 10, 15, 25, 50]
+
+    # Get the list of topic numbers to try as a command line arg too.
+    possible_k_values = args.topic_numbers
 
     # Store the results to the result path. Add the headers if the file doesn't exist yet.
     if not os.path.exists(args.results_path):
@@ -158,7 +163,7 @@ def main():
     print(f"Best average likelihood found was {best_likelihood} with parameter value k={best_k}")
     fout.close()
 
-# Entry point to the program.
+# Entry point to the cross validation (LDA) program.
 if __name__ == '__main__':
     main()
 
