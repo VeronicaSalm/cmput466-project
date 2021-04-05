@@ -78,8 +78,8 @@ def main():
     for topic in top_words:
         print(topic, coh.getCoherence(top_words[topic]))
 
+    dm.save_words_as_json(top_words, "temp.json")
 
 # Entry point to the program.
 if __name__ == '__main__':
     main()
-
