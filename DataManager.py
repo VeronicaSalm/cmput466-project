@@ -7,6 +7,7 @@
 
 import os, sys, csv
 import random
+import json
 
 # sklearn
 from sklearn.decomposition import LatentDirichletAllocation, NMF
@@ -513,3 +514,8 @@ class DataManager:
             word_idx = np.argsort(comp)[::-1][:n_top_words]
             topic_words[topic] = [vocab[i] for i in word_idx]
         return topic_words
+
+      
+    def save_words_as_json(self, words, path):
+        with open(path, 'w+') as json_file:
+            json.dump(words, json_file)
