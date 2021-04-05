@@ -527,6 +527,7 @@ class DataManager:
             topic_words[topic] = [vocab[i] for i in word_idx]
         return topic_words
 
+      
     def save_words_as_json(self, words, path):
         '''
         Stores the dictionary of topic words to the json file represented by path.
