@@ -7,6 +7,7 @@
 
 import os, sys, csv
 import random
+import json
 
 # sklearn
 from sklearn.decomposition import LatentDirichletAllocation, NMF
@@ -506,6 +507,18 @@ class DataManager:
 
 
     def get_top_words_per_topic(self, model, vectorizer, n_top_words):
+        '''
+        Extracts the top words from each topic.
+
+        Arguments:
+            - model: the LDA or NMF model
+            - vectorizer: the vectorizer (count or tf-idf) used when training the model
+            - n_top_words (int): the number of words from each topic to return.
+
+        Returns:
+            - topic_words (dict): a dictionary mapping each topic id to a list of its top
+                                  words, in decreasing order of probability.
+        '''
         # https://stackoverflow.com/questions/44208501/getting-topic-word-distribution-from-lda-in-scikit-learn
         vocab = vectorizer.get_feature_names()
         topic_words = {}
@@ -513,3 +526,17 @@ class DataManager:
             word_idx = np.argsort(comp)[::-1][:n_top_words]
             topic_words[topic] = [vocab[i] for i in word_idx]
         return topic_words
+
+    def save_words_as_json(self, words, path):
+        '''
+        Stores the dictionary of topic words to the json file represented by path.
+        The main purpose of this function is to create the input data for intruder
+        detection.
+
+        Arguments:
+            - words (dict): the dictionary mapping topic ids to a list of the most
+                            probable words for that topic
+            - path (string): the path where the resulting json file should be stored
+        '''
+        with open(path, 'w+') as json_file:
+            print(json.dumps(words, indent=4), file=json_file)

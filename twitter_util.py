@@ -22,6 +22,13 @@ import settings
 # nltk.download('punkt')
 # nltk.download('wordnet')
 
+# Read the stop list from stop_list.txt
+fobj = open(settings.STOP_LIST, 'r')
+stop_list = set([l.strip() for l in fobj.readlines()])
+if settings.DEBUG:
+    print(f"Loaded stop list: {sorted(list(stop_list))}")
+
+
 
 def download_twitter(path='./TwitterDataset'):
     '''
@@ -111,11 +118,6 @@ def tokenize_twitter(text, remove_stopwords=True):
         tokens = list(filter(lambda x: x.lower() not in s_words, tokens))
 
     return tokens
-
-fobj = open("stop_list.txt", "r")
-stop_list = set([l.strip() for l in fobj.readlines()])
-
-print(stop_list)
 
 def normalize_twitter(tokens):
     '''

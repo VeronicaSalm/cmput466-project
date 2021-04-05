@@ -39,7 +39,7 @@ def main():
         if settings.DEBUG: print(f"        Training took {end-start:0.4f} seconds.")
 
         print("Finding top words:")
-        top_words = dm.get_top_words_per_topic(model, vectorizer, 15)
+        top_words = dm.get_top_words_per_topic(model, vectorizer, 10)
         print(top_words)
 
 
