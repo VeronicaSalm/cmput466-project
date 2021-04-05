@@ -33,7 +33,7 @@ def run_nmf(data, alpha=1.34, beta_loss='kullback-leibler', l1_ratio=0.66, solve
         solver (string): Numerical solver to use for NMF.
         num_iterations (int): The number of iterations to run for.
         num_components (int): The number of components or topics NMF generates.
-    
+
     Returns:
         A list of lists, the j'th element of the i'th list is the probability that the i'th document belongs to topic j. (i.e. the weighting of topic j)
     """
@@ -45,12 +45,12 @@ def run_nmf(data, alpha=1.34, beta_loss='kullback-leibler', l1_ratio=0.66, solve
         options = "', '".join(['kullback-leibler', 'frobenius', 'itakura-saito'])
         msg += f"Please use one of: '{options}'."
         raise Exception(msg)
-    
+
     if solver not in ['mu', 'cd']:
         msg = 'Invalid numerical solver given for NMF.\n'
         msg += "Please use one of: 'mu', 'cd'."
         raise Exception(msg)
-    
+
     if l1_ratio < 0 or l1_ratio > 1:
         raise Exception('Invalid L1 ration given for NMF.\nPlease make sure l1_ratio is in the range [0, 1].')
 
@@ -75,9 +75,9 @@ def run_nmf(data, alpha=1.34, beta_loss='kullback-leibler', l1_ratio=0.66, solve
         alpha=alpha,
         l1_ratio=l1_ratio
     )
-    
+
     nmf_model.fit(vectorized_data)
-    
+
     return nmf_model
 
 
