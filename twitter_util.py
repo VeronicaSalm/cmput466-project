@@ -79,7 +79,6 @@ def load_data_twitter(twitter_dir):
 
                 # get the next tweet
                 line = json_file.readline()
-        break
 
     return (train, test, classes)
 
