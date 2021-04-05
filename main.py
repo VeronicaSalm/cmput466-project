@@ -39,7 +39,7 @@ def main():
         if settings.DEBUG: print(f"        Training took {end-start:0.4f} seconds.")
 
         print("Finding top words:")
-        top_words = dm.get_top_words_per_topic(model, vectorizer, 15)
+        top_words = dm.get_top_words_per_topic(model, vectorizer, 10)
         print(top_words)
 
 
@@ -60,8 +60,8 @@ def main():
 
     print(f"Best average coherence found was {best_coh} with parameter value k={best_k}")
 
-    dm.save_words_as_json(top_words, "temp.json")
 
 # Entry point to the program.
 if __name__ == '__main__':
     main()
+

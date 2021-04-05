@@ -22,7 +22,13 @@ import settings
 # nltk.download('punkt')
 # nltk.download('wordnet')
 
+# Read the stop list from stop_list.txt
+fobj = open(settings.STOP_LIST, 'r')
+stop_list = set([l.strip() for l in fobj.readlines()])
+if settings.DEBUG:
+    print(f"Loaded stop list: {sorted(list(stop_list))}")
 
+    
 def download_twitter(path='./TwitterDataset'):
     '''
     Downloads the twitter dataset from the git repository:
@@ -83,7 +89,7 @@ def load_data_twitter(twitter_dir):
     return (train, test, classes)
 
 
-def tokenize_twitter(text, remove_stopwords=False):
+def tokenize_twitter(text, remove_stopwords=True):
     '''
     Tokenize a given text. Also removes URLs and
     has the option to remove stop words.
@@ -99,12 +105,16 @@ def tokenize_twitter(text, remove_stopwords=False):
     # First, use a simple regex to remove the URLs. Then tokenize the text.
     # We remove URLs here as it'll be more difficult to do this when we normalize.
     text = re.sub(r"http\S+", "", text)
+
+    # remove all punctuation
+    text = text.translate(str.maketrans('', '', string.punctuation))
+
     tokens = word_tokenize(text)
 
     # Handle stopwords if needed.
     if remove_stopwords:
-        s_words = set(stopwords.words('english'))
-        tokens = list(filter(lambda x: x not in s_words, tokens))
+        s_words = set([s.lower() for s in stopwords.words('english')])
+        tokens = list(filter(lambda x: x.lower() not in s_words, tokens))
 
     return tokens
 
@@ -127,5 +137,9 @@ def normalize_twitter(tokens):
     '''
 
     lemmatizer = WordNetLemmatizer()
-    return [lemmatizer.lemmatize(token.lower()) for token in tokens if (token not in string.punctuation) and (token.encode("ascii", "ignore").decode())]
+    valid = []
+    for token in tokens:
+        if token.lower() not in stop_list:
+            valid.append(token)
+    return [lemmatizer.lemmatize(token.lower()) for token in valid if (token not in string.punctuation) and (token.encode("ascii", "ignore").decode())]
 
