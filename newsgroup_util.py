@@ -8,7 +8,7 @@ from sklearn.datasets import fetch_20newsgroups
 from nltk.corpus import stopwords
 from nltk.tokenize import word_tokenize
 from nltk.stem import WordNetLemmatizer
-import string, nltk, csv, os
+import string, nltk, csv, os, re
 
 # Project-wide constants, file paths, etc.
 import settings
@@ -246,7 +246,7 @@ def load_data_newsgroup():
     return (train, test, classes)
 
 
-def tokenize_newsgroup(text, remove_stopwords=False):
+def tokenize_newsgroup(text, remove_stopwords=True):
     '''
     Tokenize a given text.
 
@@ -257,14 +257,19 @@ def tokenize_newsgroup(text, remove_stopwords=False):
     Return Values:
         - (list): The tokenized text.
     '''
+    # First, use a simple regex to remove the URLs. Then tokenize the text.
+    # We remove URLs here as it'll be more difficult to do this when we normalize.
+    text = re.sub(r"http\S+", "", text)
 
-    # First tokenize the text.
+    # remove all punctuation
+    text = text.translate(str.maketrans('', '', string.punctuation))
+
     tokens = word_tokenize(text)
 
     # Handle stopwords if needed.
     if remove_stopwords:
-        s_words = set(stopwords.words('english'))
-        tokens = list(filter(lambda x: x not in s_words, tokens))
+        s_words = set([s.lower() for s in stopwords.words('english')])
+        tokens = list(filter(lambda x: x.lower() not in s_words, tokens))
 
     return tokens
 

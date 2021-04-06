@@ -28,7 +28,7 @@ stop_list = set([l.strip() for l in fobj.readlines()])
 if settings.DEBUG:
     print(f"Loaded stop list: {sorted(list(stop_list))}")
 
-    
+
 def download_twitter(path='./TwitterDataset'):
     '''
     Downloads the twitter dataset from the git repository:
