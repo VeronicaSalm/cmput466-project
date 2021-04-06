@@ -80,7 +80,7 @@ class DataManager:
         self.__no_folds_exception_msg = "You cannot call a fold-related method as divide_into_folds has not yet been called on this instance."
 
 
-    def load_data(self, tweet_cache, download=False, download_path=None):
+    def load_data(self, tweet_cache=None, download=False, download_path=None):
         '''
         Interface for loading in the dataset.
         Defaults to the specified function pointer from when the class is initialized.
@@ -115,25 +115,26 @@ class DataManager:
 
         # We now want to tokenize and normalize our data.
         # Loop through the training and test data and update each document.
-        try:
-            # Caching tweets avoids having to re-normalize them every execution
-            cache_file = open(tweet_cache, 'r+')
-        except:
-            cache_file = open(tweet_cache, 'w+')
+        if self.__dataset == "twitter":
+            try:
+                # Caching tweets avoids having to re-normalize them every execution
+                cache_file = open(tweet_cache, 'r+')
+            except:
+                cache_file = open(tweet_cache, 'w+')
 
-        # Extract all tweets from the cache
-        for i in range(len(self.__train)):
-            if i and i%10000 == 0:
-                print(i)
-            cached = self.get_cached_tweet(cache_file, self.__train[i][2])
-            if cached:
-                self.__train[i][1] = cached
-            else:
-                self.__train[i][1] = ' '.join(self.__normalize(self.__tokenize(self.__train[i][1])))
-                self.cache_tweet(cache_file, self.__train[i][2], self.__train[i][1])
-        cache_file.close()
+            # Extract all tweets from the cache
+            for i in range(len(self.__train)):
+                if i and i%10000 == 0:
+                    print(i)
+                cached = self.get_cached_tweet(cache_file, self.__train[i][2])
+                if cached:
+                    self.__train[i][1] = cached
+                else:
+                    self.__train[i][1] = ' '.join(self.__normalize(self.__tokenize(self.__train[i][1])))
+                    self.cache_tweet(cache_file, self.__train[i][2], self.__train[i][1])
+            cache_file.close()
 
-        # Extract all test tweets (only for newsgroups)
+        # Extract all test documents (only for newsgroups)
         for i in range(len(self.__test)):
             self.__test[i][1] = ' '.join(self.__normalize(self.__tokenize(self.__test[i][1])))
 
@@ -527,7 +528,7 @@ class DataManager:
             topic_words[topic] = [vocab[i] for i in word_idx]
         return topic_words
 
-      
+
     def save_words_as_json(self, words, path):
         '''
         Stores the dictionary of topic words to the json file represented by path.

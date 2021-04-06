@@ -1,7 +1,8 @@
 # --------------------------------------------------
 # lda_cross_validation_twitter.py
 #
-# Main entry point for the whole project.
+# Performs cross validation using LDA on the Twitter
+# dataset, to tune the number of topics k.
 # --------------------------------------------------
 from sklearn.decomposition import LatentDirichletAllocation
 from sklearn.feature_extraction.text import CountVectorizer
