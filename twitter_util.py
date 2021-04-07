@@ -82,7 +82,6 @@ def load_data_twitter(twitter_dir):
 
                 # store the tweetID and date in case we need them later
                 train.append([None, text, tweetID, date])
-
                 # get the next tweet
                 line = json_file.readline()
 
