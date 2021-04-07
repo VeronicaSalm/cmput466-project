@@ -1,4 +1,4 @@
-# -------------------------------------------------------------
+
 # run_nmf_twitter.py
 #
 # Can be used to run NMF with a specified value of k,
