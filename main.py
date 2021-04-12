@@ -17,7 +17,7 @@ def main():
     Driver code for the project.
     '''
     # Extract the data for LDA and divide into 10 folds
-    dm = DataManager(settings.NEWSGROUP_DIR, 'newsgroup')
+    dm = DataManager(None, "mask")
     print("Loading data...")
     dm.load_data()
 

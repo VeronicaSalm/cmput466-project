@@ -41,8 +41,9 @@ class DataManager:
         '''
 
         # First, raise an exception if the given dataset is invalid.
-        if dataset not in ['newsgroup', 'twitter']:
-            raise Exception('Invalid dataset given. Options are: newsgroup, twitter')
+        datasets = ['newsgroup', 'twitter', 'mask']
+        if dataset not in datasets:
+            raise Exception('Invalid dataset given. Options are: {}'.format(datasets))
 
         # Each document takes up one row containing its terms.
         # It also has the true label attached, which is possibly null.
@@ -70,6 +71,11 @@ class DataManager:
             self.__load_data = twitter_util.load_data_twitter
             self.__tokenize = twitter_util.tokenize_twitter
             self.__normalize = twitter_util.normalize_twitter
+        elif dataset == 'mask':
+            self.__download = None
+            self.__load_data = None
+            self.__tokenize = twitter_util.tokenize_twitter
+            self.__normalize = twitter_util.normalize_twitter
 
         # There are no folds until self.divide_into_folds(k) is called
         self.__folds = None
@@ -90,6 +96,40 @@ class DataManager:
             - download (boolean): Flag for if we should force re-downloading of the data.
             - download_path: For Twitter dataset only, specifies the download path
         '''
+
+        if self.__dataset == 'mask':
+            self.__classes = ["Pro-Mask", "Anti-Mask", "Neutral", "Unrelated", "Not Sure"]
+            with open("mask_data/train.csv") as fobj:
+                reader = csv.reader(fobj)
+                reader.__next__()
+                for row in reader:
+                    self.__train.append([row[2], row[1], row[0], row[3]])
+
+
+            with open("mask_data/test.csv") as fobj:
+                reader = csv.reader(fobj)
+                reader.__next__()
+                for row in reader:
+                    self.__test.append([row[2], row[1], row[0], row[3]])
+
+            print(len(self.__train), len(self.__test))
+
+            for i in range(len(self.__test)):
+                self.__test[i][1] = ' '.join(self.__normalize(self.__tokenize(self.__test[i][1])))
+
+            for i in range(len(self.__train)):
+                self.__train[i][1] = ' '.join(self.__normalize(self.__tokenize(self.__train[i][1])))
+
+            self.__classified_train = { c: [] for c in self.__classes }
+            self.__classified_test = { c: [] for c in self.__classes }
+
+            for doc in self.__train:
+                self.__classified_train[doc[0]].append(doc[1])
+
+            for doc in self.__test:
+                self.__classified_test[doc[0]].append(doc[1])
+
+            return
 
         # Download the data if necessary.
         if self.__dataset == "twitter" and download:
