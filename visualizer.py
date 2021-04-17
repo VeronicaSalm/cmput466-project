@@ -1,5 +1,5 @@
 import json, argparse
-from wordcloud import WordCloud, STOPWORDS
+from wordcloud import WordCloud
 import matplotlib.pyplot as plt
 
 parser = argparse.ArgumentParser(description="Visualization tool")
@@ -22,5 +22,5 @@ if __name__ == "__main__":
     for topic in topic_data.keys():
         keywords = " ".join(topic_data[topic]) + " "
         wordcloud = WordCloud(width = 800, height = 800, background_color = 'white',
-                              min_font_size = 10).generate(keywords)
+                              min_font_size = 10, include_numbers= True, stopwords="", prefer_horizontal=True).generate(keywords)
         wordcloud.to_file("{}/topic {}.png".format(args.output_path, topic))
