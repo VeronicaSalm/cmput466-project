@@ -1,3 +1,11 @@
+# --------------------------------------------------
+# visualizer.py
+# 
+# Visualizatoin tool, for visualizing keywords for each topic
+# Can be used to run on a json file in the input path
+# Produces a png file output in the output path
+# --------------------------------------------------
+
 import json, argparse
 from wordcloud import WordCloud
 import matplotlib.pyplot as plt
