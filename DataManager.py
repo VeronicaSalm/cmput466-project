@@ -444,7 +444,7 @@ class DataManager:
         return lda_model.transform(vectorized_data), lda_model, count_vect
 
 
-    def run_nmf(self, data=None, alpha=1.34, beta_loss='kullback-leibler', l1_ratio=0.66, solver='mu', num_iterations=1000, num_components=20):
+    def run_nmf(self, data=None, alpha=1.34, beta_loss='kullback-leibler', l1_ratio=0.66, solver='mu', num_iterations=100000, num_components=20):
         """
         Run NMF on the given data. Defaults to the training set if no data is specified.
 
@@ -484,7 +484,7 @@ class DataManager:
         tfidf_vect = TfidfVectorizer(
             max_df=0.95,
             min_df=2,
-            max_features=10000,
+            max_features=20000,
             stop_words='english'
         )
 
