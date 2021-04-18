@@ -445,7 +445,7 @@ class DataManager:
         return lda_model.transform(vectorized_data), lda_model, count_vect
 
 
-    def run_nmf(self, data=None, alpha=1.34, beta_loss='kullback-leibler', l1_ratio=0.66, solver='mu', num_iterations=1000, num_components=20):
+    def run_nmf(self, data=None, alpha=1.34, beta_loss='kullback-leibler', l1_ratio=0.66, solver='mu', num_iterations=100000, num_components=20):
         """
         Run NMF on the given data. Defaults to the training set if no data is specified.
 
@@ -529,7 +529,7 @@ class DataManager:
             topic_words[topic] = [vocab[i] for i in word_idx]
         return topic_words
 
-      
+
     def save_words_as_json(self, words, path):
         '''
         Stores the dictionary of topic words to the json file represented by path.
