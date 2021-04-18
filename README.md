@@ -34,6 +34,8 @@ Below are all of the code files in this repository.
     - Code demo for the project.
 * stop_list_iter.py
     - Uses LDA to build a stop list of uninformative terms.
+* lda_gibbs.py
+    - Our implementation of LDA using Gibbs sampling.
 ```
 
 Note that `intruder-detection` and the sub-directories in `scripts` all have their own READMEs, please see them for more information.
