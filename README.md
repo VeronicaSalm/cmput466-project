@@ -40,6 +40,8 @@ Note that `intruder-detection` and the sub-directories in `scripts` all have the
 
 ## Libraries and Running Instructions
 In order to run any of our code files, multiple libraries need to be installed.
-In particular, `numpy`, `sklearn`, `nltk`, and `gensim`. There is sometimes an error with `nltk` after you install it,
+In particular, `numpy`, `sklearn`, `nltk`, and `gensim`. These can be installed with the command
+`pip3 install numpy sklearn nltk gensim`. Make sure you also have Python 3.7 installed.
+There is sometimes an error with `nltk` after you install it,
 just uncomment the lines 19-21 in `newsgroup_util.py` and run again to fix the `nltk` error.
 Once these libraries are installed, simply run `python3 main.py` to see our demo code of running both topic modelling algorithms.
