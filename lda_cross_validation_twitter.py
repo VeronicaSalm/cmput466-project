@@ -1,7 +1,6 @@
 # --------------------------------------------------
 # lda_cross_validation_twitter.py
 #
-# Main entry point for the whole project.
 # --------------------------------------------------
 from sklearn.decomposition import LatentDirichletAllocation
 from sklearn.feature_extraction.text import CountVectorizer
