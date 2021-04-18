@@ -45,3 +45,22 @@ In particular, `numpy`, `sklearn`, `nltk`, and `gensim`. These can be installed 
 There is sometimes an error with `nltk` after you install it,
 just uncomment the lines 19-21 in `newsgroup_util.py` and run again to fix the `nltk` error.
 Once these libraries are installed, simply run `python3 main.py` to see our demo code of running both topic modelling algorithms.
+
+## Downloading the Twitter Dataset
+In this repository, we've added functions to streamline the process of downloading the twitter dataset.
+In particular, to download the twitter dataset you want to run the following function:
+```
+def download_twitter(path='./TwitterDataset'):
+    '''
+    Downloads the twitter dataset from the git repository:
+        https://github.com/VeronicaSalm/TwitterDataset
+
+    Arguments:
+        - path (string): an absolute or relative path to the directory where the
+                         Twitter repository should be downloaded to, defaults to
+                         the current directory '.'
+    '''
+    os.system(f"git clone https://github.com/VeronicaSalm/TwitterDataset {path}")
+```
+That appears in `twitter_util.py`. You can just import it with the line `from twitter_util import download_twitter`.
+For all of the utility code provided, it is thoroughly documented with function headers and comments.

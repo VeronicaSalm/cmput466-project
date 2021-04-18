@@ -1,0 +1,16 @@
+{"topic": "1", "testcase": ["christians", "games", "win", "points", "year"], "intruder_topic": "0", "intruder": "christians", "correct": true}
+{"topic": "2", "testcase": ["program", "file", "windows", "edu", "softball"], "intruder_topic": "1", "intruder": "softball", "correct": false}
+{"topic": "2", "testcase": ["library", "com", "book", "send", "code"], "intruder_topic": "0", "intruder": "book", "correct": false}
+{"topic": "0", "testcase": ["book", "mary", "government", "bible", "christian"], "intruder_topic": "3", "intruder": "government", "correct": false}
+{"topic": "3", "testcase": ["softball", "public", "nasa", "government", "data"], "intruder_topic": "1", "intruder": "softball", "correct": true}
+{"topic": "1", "testcase": ["season", "points", "research", "softball", "games"], "intruder_topic": "3", "intruder": "research", "correct": false}
+{"topic": "2", "testcase": ["game", "windows", "repository", "send", "linux"], "intruder_topic": "1", "intruder": "game", "correct": true}
+{"topic": "0", "testcase": ["religion", "jesus", "christians", "faith", "space"], "intruder_topic": "3", "intruder": "space", "correct": false}
+{"topic": "0", "testcase": ["truth", "mary", "religion", "christians", "file"], "intruder_topic": "2", "intruder": "file", "correct": false}
+{"topic": "3", "testcase": ["rocket", "public", "year", "nasa", "space"], "intruder_topic": "1", "intruder": "year", "correct": false}
+{"topic": "1", "testcase": ["season", "christian", "game", "points", "play"], "intruder_topic": "0", "intruder": "christian", "correct": false}
+{"topic": "1", "testcase": ["bible", "points", "softball", "play", "season"], "intruder_topic": "0", "intruder": "bible", "correct": true}
+{"topic": "3", "testcase": ["data", "number", "research", "government", "windows"], "intruder_topic": "2", "intruder": "windows", "correct": false}
+{"topic": "2", "testcase": ["code", "data", "program", "edu", "repository"], "intruder_topic": "3", "intruder": "data", "correct": false}
+{"topic": "0", "testcase": ["jesus", "bible", "send", "faith", "christian"], "intruder_topic": "2", "intruder": "send", "correct": false}
+{"topic": "3", "testcase": ["research", "number", "play", "rocket", "government"], "intruder_topic": "1", "intruder": "play", "correct": false}
