@@ -66,9 +66,6 @@ class LDA:
                     dt[d][int(newta[d][w])] += 1
                     wt[int(newta[d][w])][self.__corpus[d][w]] += 1
             ta = newta
-        print(ta)
-        print(dt)
-        print(wt)
        
         theta = np.zeros([len(self.__corpus), self.__K])
         for d in range(len(self.__corpus)):
@@ -77,7 +74,9 @@ class LDA:
         return theta
 
 
-
-my_lda = LDA(2, 28, [[1, 2, 3, 4, 5], [6, 7, 8, 1, 9, 3, 5], [2, 10, 11, 3, 12, 5], [13, 11, 14, 15], [16, 17, 18, 11], [19, 3, 12], [19, 20, 21, 22, 18, 23, 24, 25, 19], [26, 19, 27]], 1, 1)
-theta = my_lda.train(1000)
-print(theta)
+if __name__ == "__main__":
+    print("Running LDA with 2 topics on some data (hardcoded in file if you want to check)")
+    my_lda = LDA(2, 28, [[1, 2, 3, 4, 5], [6, 7, 8, 1, 9, 3, 5], [2, 10, 11, 3, 12, 5], [13, 11, 14, 15], [16, 17, 18, 11], [19, 3, 12], [19, 20, 21, 22, 18, 23, 24, 25, 19], [26, 19, 27]], 1, 1)
+    theta = my_lda.train(1000)
+    print("Result (weighting of documents towards topics)")
+    print(theta)
