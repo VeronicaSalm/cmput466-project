@@ -1,3 +1,10 @@
+# ----------------------------------------------------
+# lda_gibbs.py
+#
+# Contains a sample implementation of LDA using Gibb's
+# sampling.
+# ----------------------------------------------------
+
 import numpy as np
 from random import randint, choices
 
@@ -20,7 +27,7 @@ class LDA:
             self.__alpha = 50 / self.__K
         self.__beta = beta
         self.__W = np.sum([len(doc) for doc in self.__corpus])
-    
+
 
     def train(self, num_iterations):
         # K x V word topic matrix
@@ -42,7 +49,7 @@ class LDA:
                 ta[d][w] = random_topic
                 dt[d][random_topic] += 1
                 wt[random_topic][self.__corpus[d][w]] += 1
-        
+
         # apply num_iterations iterations
         for _ in range(num_iterations):
             # calculate values for the new ta
@@ -66,7 +73,7 @@ class LDA:
                     dt[d][int(newta[d][w])] += 1
                     wt[int(newta[d][w])][self.__corpus[d][w]] += 1
             ta = newta
-       
+
         theta = np.zeros([len(self.__corpus), self.__K])
         for d in range(len(self.__corpus)):
             for j in range(self.__K):
