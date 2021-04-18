@@ -485,7 +485,7 @@ class DataManager:
         tfidf_vect = TfidfVectorizer(
             max_df=0.95,
             min_df=2,
-            max_features=10000,
+            max_features=20000,
             stop_words='english'
         )
 

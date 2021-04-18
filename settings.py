@@ -4,7 +4,7 @@
 import os
 
 # Debug flag. If set, more verbose output is given.
-DEBUG = True
+DEBUG = False
 
 # Various file paths and directories.
 PROJECT_DIR = os.path.abspath(os.getcwd())
