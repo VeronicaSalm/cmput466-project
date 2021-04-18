@@ -30,7 +30,7 @@ class DataManager:
     Class for loading in and managing data.
     '''
 
-    def __init__(self, data_dir, dataset, remove_stopwords=False):
+    def __init__(self, data_dir, dataset, remove_stopwords=True):
         '''
         Initialize the data manager class.
 
@@ -130,13 +130,14 @@ class DataManager:
                 if cached:
                     self.__train[i][1] = cached
                 else:
-                    self.__train[i][1] = ' '.join(self.__normalize(self.__tokenize(self.__train[i][1])))
+                    self.__train[i][1] = ' '.join(self.__normalize(self.__tokenize(self.__train[i][1], self.__rm_stop)))
                     self.cache_tweet(cache_file, self.__train[i][2], self.__train[i][1])
             cache_file.close()
 
-        # Extract all test documents (only for newsgroups)
-        for i in range(len(self.__test)):
-            self.__test[i][1] = ' '.join(self.__normalize(self.__tokenize(self.__test[i][1])))
+        # Extract all test tweets (only for newsgroups)
+        if self.__dataset == "newsgroups":
+            for i in range(len(self.__test)):
+                self.__test[i][1] = ' '.join(self.__normalize(self.__tokenize(self.__test[i][1], self.__rm_stop)))
 
         if settings.DEBUG: print('Finished tokenizing and normalizing the training and test data.')
 
