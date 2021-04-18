@@ -246,7 +246,7 @@ def load_data_newsgroup():
     return (train, test, classes)
 
 
-def tokenize_newsgroup(text, remove_stopwords=False):
+def tokenize_newsgroup(text, remove_stopwords=True):
     '''
     Tokenize a given text.
 
