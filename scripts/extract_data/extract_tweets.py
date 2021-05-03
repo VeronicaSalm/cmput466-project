@@ -74,7 +74,8 @@ def detect_english(text, threshold = 0.70):
         # ignore hashtags, which will rarely be a single English word
         # hashtags like "#WearAMask" are very common, but the dictionary won't
         # include them.
-        if w.startswith("#"):
+        # The same is true of mentions
+        if w.startswith("#") or w.startswith("@"):
             continue
 
         # remove punctuation
