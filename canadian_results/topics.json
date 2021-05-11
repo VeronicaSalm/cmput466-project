@@ -1,5 +1,5 @@
 {
-    "0": {
+    "1": {
         "features": {
             "new": 1.2211620473036637,
             "2019ncov": 0.7813296227495833,
@@ -33,9 +33,10 @@
             "range",
             "spike",
             "country"
-        ]
+        ],
+        "coherence": 0.9774130872317723
     },
-    "1": {
+    "2": {
         "features": {
             "disease": 0.5893385542603478,
             "public": 0.583519579702654,
@@ -69,9 +70,10 @@
             "surveillance",
             "communicable",
             "portion"
-        ]
+        ],
+        "coherence": 0.9793820244925363
     },
-    "2": {
+    "3": {
         "features": {
             "wuhan": 0.7512145301531338,
             "case": 0.710262888111001,
@@ -105,9 +107,10 @@
             "said",
             "life",
             "confirms"
-        ]
+        ],
+        "coherence": 0.9910275692031497
     },
-    "3": {
+    "4": {
         "features": {
             "epidemic": 0.9777758649278661,
             "want": 0.5477546801603909,
@@ -141,9 +144,10 @@
             "light",
             "toronto",
             "politician"
-        ]
+        ],
+        "coherence": 0.9800656727382115
     },
-    "4": {
+    "5": {
         "features": {
             "people": 0.7521985455459834,
             "epidemic": 0.6205485981362691,
@@ -177,9 +181,10 @@
             "visit",
             "loved",
             "jason"
-        ]
+        ],
+        "coherence": 0.9894983371098837
     },
-    "5": {
+    "6": {
         "features": {
             "risk": 0.5376101669291972,
             "canada": 0.33738775508624336,
@@ -213,9 +218,10 @@
             "closely",
             "detect",
             "domestic"
-        ]
+        ],
+        "coherence": 0.9860956396375383
     },
-    "6": {
+    "7": {
         "features": {
             "virus": 0.6107507628974747,
             "cdc": 0.33316507627421865,
@@ -249,9 +255,10 @@
             "sense",
             "situation",
             "travel"
-        ]
+        ],
+        "coherence": 0.9885905884561085
     },
-    "7": {
+    "8": {
         "features": {
             "wuhancoronavirus": 0.6022375455521594,
             "wuhanpneumonia": 0.5132062967547419,
@@ -285,9 +292,10 @@
             "local",
             "wuflu",
             "travelled"
-        ]
+        ],
+        "coherence": 0.9857869346936544
     },
-    "8": {
+    "9": {
         "features": {
             "wuhan": 0.49752781721762107,
             "city": 0.3820666530507971,
@@ -321,9 +329,10 @@
             "metro",
             "cdc",
             "including"
-        ]
+        ],
+        "coherence": 0.9928404467446463
     },
-    "9": {
+    "10": {
         "features": {
             "health": 0.5650524916129602,
             "wuhancoronavirus": 0.5632735980748228,
@@ -357,6 +366,7 @@
             "drtedros",
             "ongoing",
             "toll"
-        ]
+        ],
+        "coherence": 0.9895753928593227
     }
 }
