@@ -223,55 +223,6 @@ def main():
     topics = plot_top_words(model, tfidf_feature_names, num_topics, args.num_words, 
                'Topics in NMF model (Frobenius norm)', args.dest)
 
-    print("Finding top words:")
-    print("TOP WORDS:")
-    for t in topics.keys():
-        print(f"    {t}: {topics[t]['words']}")
-    
-    print("Finding coherence of each topic:")
-    coh_list = []
-    for topic in topics:
-        words = topics[topic]["words"]
-        topic_coherence = coh.getCoherence(words)
-        print(topic, topic_coherence)
-        topics[topic]["coherence"] = topic_coherence
-        coh_list.append(topic_coherence)
-    avg_coh = sum(coh_list) / len(coh_list)
-    print("    Average Coherence =", avg_coh)
-
-    wordclouds_path = os.path.join(args.dest, "wordclouds")
-    os.system(f"mkdir {wordclouds_path}")
-    
-    # generate word cloud for each topic    
-    """
-    print("Generating word clouds for each topic...")
-    for topic in topics.keys():
-        features = topics[topic]["features"]
-        word_model = WordCloud(width = 800, height = 800, background_color = 'white',
-                        min_font_size = 10, include_numbers= True, relative_scaling=0.7, stopwords="", prefer_horizontal=True)
-        wordcloud = word_model.generate_from_frequencies(features)
-        wordcloud.to_file("{}/topic{}.png".format(wordclouds_path, '{0:02}'.format(topic)))
-
-    topics["num_topics"] = int(num_topics)
-    topics["gensim_coherence"] = float(gensim_coh)
-    
-    print("Storing words to output...")
-    if args.train_path not in known:
-        topic_writer.writerow([args.train_path, num_topics, gensim_coh])
-    
-    dm.save_words_as_json(topics, os.path.join(args.dest, "topics.json"))
-    """
-
-    print("Transformed:")
-    cnt = 0
-    """
-    top_topic_words = set()
-    for t in topics.keys():
-        words = set(topics[t]['words'])
-        top_topic_words = top_topic_words.union(words)
-
-    print(top_topic_words)
-    """
 
     print("Generating statistics...", end=" ")
     word_counts = defaultdict(int)
@@ -301,8 +252,6 @@ def main():
         # tid-1 to index correctly (added one earlier)
         docs_by_topic[tid].append([ID, topic_results[tid-1]])
         
-        # print(max(topics), topics.argmax(), topics)
-        cnt += 1
     print("Done!")
     
     # save word counts, in descending order
@@ -411,6 +360,37 @@ def main():
             obj["Vader Scores"][pretty]["Mean"] = mu 
             obj["Vader Scores"][pretty]["Standard Deviation"] = sd 
         print(json.dumps(obj, sort_keys=True, indent=4), file=fobj)
+    
+    print("Finding coherence of each topic:")
+    coh_list = []
+    for topic in topics:
+        words = topics[topic]["words"]
+        topic_coherence = coh.getCoherence(words)
+        topics[topic]["coherence"] = topic_coherence
+        coh_list.append(topic_coherence)
+    avg_coh = sum(coh_list) / len(coh_list)
+    print("    Average Coherence =", avg_coh)
+
+    wordclouds_path = os.path.join(args.dest, "wordclouds")
+    os.system(f"mkdir {wordclouds_path}")
+    
+    # generate word cloud for each topic    
+    print("Generating word clouds for each topic...")
+    for topic in topics.keys():
+        features = topics[topic]["features"]
+        word_model = WordCloud(width = 800, height = 800, background_color = 'white',
+                        min_font_size = 10, include_numbers= True, relative_scaling=0.7, stopwords="", prefer_horizontal=True)
+        wordcloud = word_model.generate_from_frequencies(features)
+        wordcloud.to_file("{}/topic{}.png".format(wordclouds_path, '{0:02}'.format(topic)))
+
+    topics["num_topics"] = int(num_topics)
+    topics["gensim_coherence"] = float(gensim_coh)
+    
+    print("Storing words to output...")
+    if args.train_path not in known:
+        topic_writer.writerow([args.train_path, num_topics, gensim_coh])
+    
+    dm.save_words_as_json(topics, os.path.join(args.dest, "topics.json"))
 
 # Entry point to the run NMF program.
 if __name__ == '__main__':
