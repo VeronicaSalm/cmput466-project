@@ -68,24 +68,26 @@ def load_data_twitter(twitter_dir):
     classes, train, test  = [], [], []
 
     # Read in the training data next
+    data = dict()
     for f in sorted(os.listdir(twitter_dir)):
         fpath = os.path.join(twitter_dir, f)
-
-        if settings.DEBUG: print(f"Loading {fpath}")
+        if f.startswith("."):
+            if settings.DEBUG: print(f"Skipped loading hidden file '{fpath}'")
+            continue
         with open(fpath, "r") as json_file:
             line = json_file.readline()
             while line:
                 d = json.loads(line)
                 tweetID = d["id"]
                 text = d["full_text"]
-                date = d["created_at"]
+                data[tweetID] = d
 
                 # store the tweetID and date in case we need them later
-                train.append([None, text, tweetID, date])
+                train.append([None, text, tweetID])
                 # get the next tweet
                 line = json_file.readline()
 
-    return (train, test, classes)
+    return (train, test, classes, data)
 
 
 def tokenize_twitter(text, remove_stopwords=True):

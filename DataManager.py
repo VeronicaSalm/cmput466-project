@@ -80,13 +80,12 @@ class DataManager:
         self.__no_folds_exception_msg = "You cannot call a fold-related method as divide_into_folds has not yet been called on this instance."
 
 
-    def load_data(self, tweet_cache=None, download=False, download_path=None):
+    def load_data(self, download=False, download_path=None):
         '''
         Interface for loading in the dataset.
         Defaults to the specified function pointer from when the class is initialized.
 
         Arguments:
-            - tweet_cache (string): path to the tweet cache
             - download (boolean): Flag for if we should force re-downloading of the data.
             - download_path: For Twitter dataset only, specifies the download path
         '''
@@ -108,7 +107,7 @@ class DataManager:
         # and get the training and test data, and possibly empty list of classes.
         if self.__dataset == "twitter":
             # use the path provided for the twitter dataset
-            self.__train, self.__test, self.__classes = self.__load_data(self.__dir)
+            self.__train, self.__test, self.__classes, self.__data = self.__load_data(self.__dir)
         else:
             self.__train, self.__test, self.__classes = self.__load_data()
 
@@ -116,23 +115,10 @@ class DataManager:
         # We now want to tokenize and normalize our data.
         # Loop through the training and test data and update each document.
         if self.__dataset == "twitter":
-            try:
-                # Caching tweets avoids having to re-normalize them every execution
-                cache_file = open(tweet_cache, 'r+')
-            except:
-                cache_file = open(tweet_cache, 'w+')
-
-            # Extract all tweets from the cache
             for i in range(len(self.__train)):
                 if i and i%10000 == 0:
                     print(i)
-                cached = self.get_cached_tweet(cache_file, self.__train[i][2])
-                if cached:
-                    self.__train[i][1] = cached
-                else:
-                    self.__train[i][1] = ' '.join(self.__normalize(self.__tokenize(self.__train[i][1], self.__rm_stop)))
-                    self.cache_tweet(cache_file, self.__train[i][2], self.__train[i][1])
-            cache_file.close()
+                self.__train[i][1] = ' '.join(self.__normalize(self.__tokenize(self.__train[i][1], self.__rm_stop)))
 
         # Extract all test tweets (only for newsgroups)
         if self.__dataset == "newsgroups":
@@ -154,52 +140,6 @@ class DataManager:
                 self.__classified_test[doc[0]].append(doc[1])
 
         if settings.DEBUG: print('Finished loading in the dataset.')
-
-
-    def load_cached_tweets(self, cache_file):
-        '''
-        Loads all cached tweets from cache_file into the __tweet_cache dictionary.
-
-        Arguments:
-            cache_file (file): File to read from.
-        '''
-
-        self.__tweet_cache = dict()
-        for line in cache_file.readlines():
-            tweet_id, content = line.split()[0], ' '.join(line.split()[1:])
-            self.__tweet_cache[tweet_id] = content
-
-
-    def get_cached_tweet(self, cache_file, tweet_id):
-        '''
-        Gets a cached tweet based on tweet id. The resulting tweet is already normalized / tokenized.
-
-        Arguments:
-            - cache_file (file): File to read from.
-            - tweet_id  (int): The id of the tweet you want to retrieve.
-        '''
-
-        try:
-            if str(tweet_id) in self.__tweet_cache:
-                return self.__tweet_cache[str(tweet_id)]
-            else:
-                return None
-        except:
-            self.load_cached_tweets(cache_file)
-            return self.get_cached_tweet(cache_file, tweet_id)
-
-
-    def cache_tweet(self, cache_file, tweet_id, content):
-        '''
-        Gets a cached tweet based on tweet id. The resulting tweet is already normalized / tokenized.
-
-        Arguments:
-            - cache_file (file): File to write to.
-            - tweet_id  (int): The id of the tweet you want to cache.
-            - content (string): The content of the tweet you want to cache. No newlines please!
-        '''
-
-        cache_file.write(str(tweet_id) + " " + content + '\n')
 
 
     # Below are all the getter methods for retrieving data.
@@ -230,6 +170,40 @@ class DataManager:
         '''
 
         return (self.__test[i][1] if test else self.__train[i][1])
+  
+    def get_tweet_data(self, i, test=False):
+        '''
+        Given an index i into the dataset, return that tweet's full data.
+
+        Arguments:
+            - i (integer): Index of the document in the dataset.
+            - test (boolean): Flag for if it should come from the training or test data.
+
+        Return Values:
+            - (dict): all info about that tweet
+        '''
+        if self.__dataset != "twitter":
+            raise Exception(f"Cannot get tweet data for non-Twitter dataset '{self.__dataset}'!") 
+        if test:
+            ID = self.__test[i][2]
+        else: 
+            ID = self.__train[i][2]
+       
+        return self.__data[ID]
+    
+    def get_tweet_data_by_id(self, ID):
+        '''
+        Given an index i into the dataset, return that tweet's full data.
+
+        Arguments:
+            - ID: the id of the tweet to query
+
+        Return Values:
+            - (dict): all info about that tweet
+        '''
+        if self.__dataset != "twitter":
+            raise Exception(f"Cannot get tweet data for non-Twitter dataset '{self.__dataset}'!") 
+        return self.__data[ID]
 
 
     def get_all_data(self, test=False):
