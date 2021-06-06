@@ -378,15 +378,12 @@ def main():
                 elif num_valid == num_top_docs:
                     # don't add any new documents
                     continue
-                retweet = "Original"
-                if data["retweeted_status"]:
-                    retweet = "Retweet"
-                rows.append([ID, round(weight, 5), retweet, 0, tweet_text])
+                rows.append([ID, round(weight, 5), 0, tweet_text])
                 used[tweet_text] = 1
                 num_valid += 1
             for r in rows:
-                text = r[4] # full text
-                r[3] = used[text] # count of times appeared
+                text = r[3] # full text
+                r[2] = used[text] # count of times appeared
                 writer.writerow(r)
     print("Done!")
     
@@ -432,7 +429,7 @@ def main():
         word_model = WordCloud(width = 800, height = 800, background_color = 'white',
                         min_font_size = 10, include_numbers= True, relative_scaling=0.7, stopwords="", prefer_horizontal=True)
         wordcloud = word_model.generate_from_frequencies(features)
-        wordcloud.to_file("{}/topic{}.png".format(wordclouds_path, '{0:02}'.format(topic)))
+        wordcloud.to_file("{}/topic_{}.png".format(wordclouds_path, '{0:02}'.format(topic)))
     print("Done!")
 
     print("Storing words to output...", end=" ")
