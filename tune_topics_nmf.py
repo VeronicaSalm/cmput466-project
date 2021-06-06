@@ -293,7 +293,7 @@ def main():
     word_count_path = os.path.join(args.dest, "token_stats_general.csv")
     with open(word_count_path, "w") as fobj:
         writer = csv.writer(fobj)
-        writer.writerow(["Normalized Token", "Number of Occurences", "Number of Documents", "Percent of Documents", "Number of Users", "Percent of Users"])
+        writer.writerow(["Normalized Token", "Number of Occurences", "Number of Tweets", "Percentage of Tweets", "Number of Users", "Percentage of Users"])
         for token, count in ordered_word_counts:
             docs_percent = round((document_frequency[token] / num_tweets) * 100, 5)
             users_percent = round((len(term_to_user[token]) / num_users) * 100, 5)
@@ -307,7 +307,7 @@ def main():
     print("Generating term and document frequencies...", end=" ")
     with open(topic_word_count_path, "w") as fobj:
         writer = csv.writer(fobj)
-        writer.writerow(["Topic", "Normalized Token", "Number of Occurences", "Number of Documents", "Percent of Documents", "Number of Users", "Percent of Users"])
+        writer.writerow(["Topic", "Normalized Token", "Number of Occurences", "Number of Tweets", "Percentage of Tweetts", "Number of Users", "Percentage of Users"])
         for tid in topics.keys():
             words = topics[tid]['words']
             for token in words:
@@ -341,7 +341,7 @@ def main():
     total = 0
     with open(doc_path, "w") as fobj:
         writer = csv.writer(fobj)
-        writer.writerow(["Topic Number", "Number of Documents", "Percentage of Documents", "Number of Users", "Percentage of Users"])
+        writer.writerow(["Topic Number", "Number of Tweets", "Percentage of Tweets", "Number of Users", "Percentage of Users"])
         for tid in topics.keys():
             user_list = topic_to_user[tid]
             num_topic_users = len(user_list)
@@ -362,7 +362,7 @@ def main():
         with open(doc_path, "w") as fobj:
             writer = csv.writer(fobj)
             # TODO: add document author (username and ID) and link to profile
-            writer.writerow(["Document ID", "Weight", "Is Retweet?", "Number of Times Tweeted", "Document Text"])
+            writer.writerow(["Tweet ID", "Weight", "Duplicates", "Tweet Text"])
             doc_list = docs_by_topic[tid]
             doc_list = sorted(doc_list, key=lambda x: x[1], reverse = True)
             num_valid = 0
