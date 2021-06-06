@@ -34,7 +34,7 @@
             "available",
             "update"
         ],
-        "coherence": 0.9723545698892503
+        "coherence": 0.9788265182858422
     },
     "2": {
         "features": {
@@ -71,7 +71,7 @@
             "surveillance",
             "nuthin"
         ],
-        "coherence": 0.9757812284287952
+        "coherence": 0.9759075647308713
     },
     "3": {
         "features": {
@@ -108,7 +108,7 @@
             "united",
             "life"
         ],
-        "coherence": 0.9884356328419277
+        "coherence": 0.9881367745853605
     },
     "4": {
         "features": {
@@ -145,7 +145,7 @@
             "government",
             "pretty"
         ],
-        "coherence": 0.971964046500978
+        "coherence": 0.9701372759682791
     },
     "5": {
         "features": {
@@ -182,7 +182,7 @@
             "deny",
             "height"
         ],
-        "coherence": 0.9906182493482317
+        "coherence": 0.9907854148319789
     },
     "6": {
         "features": {
@@ -219,7 +219,7 @@
             "canadian",
             "2019ncov"
         ],
-        "coherence": 0.9838907991136824
+        "coherence": 0.9827528908139184
     },
     "7": {
         "features": {
@@ -256,7 +256,7 @@
             "food",
             "antiviral"
         ],
-        "coherence": 0.9856685961995806
+        "coherence": 0.985639154343378
     },
     "8": {
         "features": {
@@ -293,7 +293,7 @@
             "case",
             "wuhancoronavirus"
         ],
-        "coherence": 0.98682260399773
+        "coherence": 0.9873355865478516
     },
     "9": {
         "features": {
@@ -330,7 +330,7 @@
             "23",
             "jan"
         ],
-        "coherence": 0.9906508922576904
+        "coherence": 0.9903256893157959
     },
     "10": {
         "features": {
@@ -367,7 +367,7 @@
             "key",
             "convened"
         ],
-        "coherence": 0.986583621728988
+        "coherence": 0.9852923552195231
     },
     "11": {
         "features": {
@@ -404,7 +404,7 @@
             "worried",
             "wear"
         ],
-        "coherence": 0.9463908195495605
+        "coherence": 0.9489315311113994
     },
     "12": {
         "features": {
@@ -441,7 +441,7 @@
             "little",
             "government"
         ],
-        "coherence": 0.983614844935281
+        "coherence": 0.9835701641582307
     },
     "13": {
         "features": {
@@ -478,7 +478,7 @@
             "london",
             "imperial"
         ],
-        "coherence": 0.9802586254619416
+        "coherence": 0.9781758683068412
     },
     "14": {
         "features": {
@@ -515,7 +515,7 @@
             "increase",
             "stuff"
         ],
-        "coherence": 0.9511723546754747
+        "coherence": 0.9623191322599138
     },
     "15": {
         "features": {
@@ -552,7 +552,7 @@
             "period",
             "make"
         ],
-        "coherence": 0.9917809537478856
+        "coherence": 0.9908620198567708
     },
     "num_topics": 15,
     "gensim_coherence": 0.75577
