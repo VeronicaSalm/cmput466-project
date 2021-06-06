@@ -20,6 +20,7 @@ from gensim.corpora.dictionary import Dictionary
 from gensim.models.nmf import Nmf
 import numpy as np
 from operator import itemgetter
+import pickle
 
 
 from DataManager import DataManager
@@ -232,18 +233,36 @@ def main():
     vader_scores = {"neg" : defaultdict(list), "compound" : defaultdict(list),
                     "neu" : defaultdict(list), "pos" : defaultdict(list) }
     docs_by_topic = defaultdict(list)
+    
+    # maps user ID to a list of their tweets and their screen name
+    users = dict()
+    
+    # maps term to a set of users who mentioned that term
+    term_to_user = defaultdict(set)
+    topic_to_user = defaultdict(set)
     for doc, topic_results in zip(docs, transformed):
         tokens = doc[1].split() # normalized tokens
         ID = doc[2]
+        data = dm.get_tweet_data_by_id(ID)
+        uid = data["user_id"]
         
         for t in tokens:
             word_counts[t] += 1
 
         for t in set(tokens):
             document_frequency[t] += 1
+            term_to_user[t].add(uid)
+        
 
-        data = dm.get_tweet_data_by_id(ID)
         tid = topic_results.argmax() + 1 # argmax will index by 0, we want ids starting from 1
+        topic_to_user[tid].add(uid)
+        
+        if uid not in users:
+            users[uid] = {"screen_name" : data["screen_name"], "tweets" : [], "topics" : set()}
+
+        users[uid]["tweets"].append(ID)
+        users[uid]["topics"].add(tid)
+
         vader_scores["neg"][tid].append(data["vader_score"]["neg"])
         vader_scores["neu"][tid].append(data["vader_score"]["neu"])
         vader_scores["pos"][tid].append(data["vader_score"]["pos"])
@@ -252,31 +271,49 @@ def main():
         # tid-1 to index correctly (added one earlier)
         docs_by_topic[tid].append([ID, topic_results[tid-1]])
         
+    num_tweets = len(dm.get_all_data())
+    num_users = len(users)
+    print("Done!")
+
+    print("Saving user stats...", end=" ")
+    sorted_users = sorted(users.items(), key = lambda x : len(x[1]["tweets"]), reverse=True)
+    user_path = os.path.join(args.dest, "user_stats.tsv")
+    with open(user_path, "w") as fobj:
+        writer = csv.writer(fobj, delimiter="\t")
+        writer.writerow(["User ID", "Screen Name", "Number of Tweets", "Number of Topics", "Topics Discussed"])
+        for u, d in sorted_users:
+            tids = ", ".join([str(t) for t in d["topics"]])
+            row = [u, d["screen_name"], len(d["tweets"]), len(d["topics"]), tids]
+            writer.writerow(row)
     print("Done!")
     
     # save word counts, in descending order
     print(f"Saving token counts...", end=" ")
     ordered_word_counts = sorted(word_counts.items(), key=lambda x: (x[1], x[0]), reverse=True)
-    word_count_path = os.path.join(args.dest, "token_counts.csv")
+    word_count_path = os.path.join(args.dest, "token_stats_general.csv")
     with open(word_count_path, "w") as fobj:
         writer = csv.writer(fobj)
-        writer.writerow(["Normalized Token", "Total Number of Occurences", "Document Frequency"])
+        writer.writerow(["Normalized Token", "Number of Occurences", "Number of Documents", "Percent of Documents", "Number of Users", "Percent of Users"])
         for token, count in ordered_word_counts:
-            writer.writerow([token, count, document_frequency[token]])
+            docs_percent = round((document_frequency[token] / num_tweets) * 100, 5)
+            users_percent = round((len(term_to_user[token]) / num_users) * 100, 5)
+            writer.writerow([token, count, document_frequency[token], docs_percent, len(term_to_user[token]), users_percent])
     print("Done!")
 
     # For each topic and for each of its top words,
     # save the number of occurences of each word (total count) and the number
     # of total documents in which that word appears (should be <= total count)
-    topic_word_count_path = os.path.join(args.dest, "token_counts_by_topic.csv")
+    topic_word_count_path = os.path.join(args.dest, "token_stats_by_topic.csv")
     print("Generating term and document frequencies...", end=" ")
     with open(topic_word_count_path, "w") as fobj:
         writer = csv.writer(fobj)
-        writer.writerow(["Topic Number", "Normalized Token", "Total Number of Occurences", "Document Frequency"])
+        writer.writerow(["Topic", "Normalized Token", "Number of Occurences", "Number of Documents", "Percent of Documents", "Number of Users", "Percent of Users"])
         for tid in topics.keys():
             words = topics[tid]['words']
             for token in words:
-                writer.writerow([tid, token, word_counts[token], document_frequency[token]])
+                docs_percent = round((document_frequency[token] / num_tweets) * 100, 5)
+                users_percent = round((len(term_to_user[token]) / num_users) * 100, 5)
+                writer.writerow([tid, token, word_counts[token], document_frequency[token], docs_percent, len(term_to_user[token]), users_percent])
     print("Done!")
 
     # aggregated vader scores, by topic
@@ -300,46 +337,61 @@ def main():
             
     # documents by topic 
     print("Counting the number of documents by topic...", end=" ")
-    doc_path = os.path.join(args.dest, "document_counts_by_topic.csv")
+    doc_path = os.path.join(args.dest, "topic_stats.csv")
     total = 0
     with open(doc_path, "w") as fobj:
         writer = csv.writer(fobj)
-        writer.writerow(["Topic Number", "Document Count"])
+        writer.writerow(["Topic Number", "Number of Documents", "Percentage of Documents", "Number of Users", "Percentage of Users"])
         for tid in topics.keys():
+            user_list = topic_to_user[tid]
+            num_topic_users = len(user_list)
             count = len(docs_by_topic[tid])
-            writer.writerow([tid, count])
+            docs_percent = round((count / num_tweets) * 100, 5)
+            users_percent = round((num_topic_users / num_users) * 100, 5)
+            writer.writerow([tid, count, docs_percent, num_topic_users, users_percent])
             total += count 
     print("Done!")
     
     # top 10 documents from each topic 
     print("Saving the top documents from each topic...", end=" ")
     doc_dir = os.path.join(args.dest, "top_documents")
-    num_docs = 15
+    num_top_docs = 15
     os.system(f"mkdir {doc_dir}")
     for tid in topics.keys():
         doc_path = os.path.join(doc_dir, f"topic_{tid:02d}.csv")
         with open(doc_path, "w") as fobj:
             writer = csv.writer(fobj)
             # TODO: add document author (username and ID) and link to profile
-            writer.writerow(["Document ID", "Weight", "Is Retweet?", "Document Text"])
+            writer.writerow(["Document ID", "Weight", "Is Retweet?", "Number of Times Tweeted", "Document Text"])
             doc_list = docs_by_topic[tid]
             doc_list = sorted(doc_list, key=lambda x: x[1], reverse = True)
-            for i in range(num_docs):
-                if i >= len(doc_list):
-                    # avoid trying to index out of range
-                    break
+            num_valid = 0
+            used = dict()
+            rows = []
+            for i in range(len(doc_list)):
                 ID, weight = doc_list[i]
                 data = dm.get_tweet_data_by_id(ID)
+                tweet_text = data["full_text"]
+                if tweet_text in used:
+                    used[tweet_text] += 1
+                    continue
+                elif num_valid == num_top_docs:
+                    # don't add any new documents
+                    continue
                 retweet = "Original"
                 if data["retweeted_status"]:
                     retweet = "Retweet"
-                text = data["full_text"]
-                writer.writerow([ID, round(weight, 5), retweet, text])
+                rows.append([ID, round(weight, 5), retweet, 0, tweet_text])
+                used[tweet_text] = 1
+                num_valid += 1
+            for r in rows:
+                text = r[4] # full text
+                r[3] = used[text] # count of times appeared
+                r.append(used[text])
+                writer.writerow(r)
     print("Done!")
     
     vocab_size = len(word_counts)
-    num_tweets = len(dm.get_all_data())
-    num_users = 0 # TODO
     print(f"Vocab Size: {vocab_size}")
     print(f"Tweets: {num_tweets}")
     print(f"Users: {num_users}")
@@ -375,22 +427,38 @@ def main():
     os.system(f"mkdir {wordclouds_path}")
     
     # generate word cloud for each topic    
-    print("Generating word clouds for each topic...")
+    print("Generating word clouds for each topic...", end=" ")
     for topic in topics.keys():
         features = topics[topic]["features"]
         word_model = WordCloud(width = 800, height = 800, background_color = 'white',
                         min_font_size = 10, include_numbers= True, relative_scaling=0.7, stopwords="", prefer_horizontal=True)
         wordcloud = word_model.generate_from_frequencies(features)
         wordcloud.to_file("{}/topic{}.png".format(wordclouds_path, '{0:02}'.format(topic)))
+    print("Done!")
 
+    print("Storing words to output...", end=" ")
     topics["num_topics"] = int(num_topics)
     topics["gensim_coherence"] = float(gensim_coh)
-    
-    print("Storing words to output...")
     if args.train_path not in known:
         topic_writer.writerow([args.train_path, num_topics, gensim_coh])
+    print("Done!")
     
-    dm.save_words_as_json(topics, os.path.join(args.dest, "topics.json"))
+    
+    print("Pickling models...", end=" ")
+    model_path = os.path.join(args.dest, "models")
+    os.system(f"mkdir {model_path}")
+    with open(os.path.join(model_path, "transformed.pickle"), "wb") as f:
+        pickle.dump(transformed, f) 
+    with open(os.path.join(model_path, "model.pickle"), "wb") as f:
+        pickle.dump(model, f) 
+    with open(os.path.join(model_path, "vectorizer.pickle"), "wb") as f:
+        pickle.dump(vectorizer, f) 
+    dm.save_words_as_json(topics, os.path.join(model_path, "topics.json"))
+    print("Done!")
+    
+    # code to load a model from pickled file
+    # with open(os.path.join(model_path, "transformed.pickle"), "rb") as f:
+    #     transformed2 = pickle.load(f)
 
 # Entry point to the run NMF program.
 if __name__ == '__main__':
