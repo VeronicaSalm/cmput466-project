@@ -354,7 +354,7 @@ def main():
     
     # top 10 documents from each topic 
     print("Saving the top documents from each topic...", end=" ")
-    doc_dir = os.path.join(args.dest, "top_documents")
+    doc_dir = os.path.join(args.dest, "top_15_tweets_per_topic")
     num_top_docs = 15
     os.system(f"mkdir {doc_dir}")
     for tid in topics.keys():
@@ -387,7 +387,6 @@ def main():
             for r in rows:
                 text = r[4] # full text
                 r[3] = used[text] # count of times appeared
-                r.append(used[text])
                 writer.writerow(r)
     print("Done!")
     

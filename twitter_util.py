@@ -78,7 +78,7 @@ def load_data_twitter(twitter_dir):
             line = json_file.readline()
             while line:
                 d = json.loads(line)
-                tweetID = d["id"]
+                tweetID = d["id_str"]
                 text = d["full_text"]
                 data[tweetID] = d
 
@@ -142,5 +142,12 @@ def normalize_twitter(tokens):
     for token in tokens:
         if token.lower() not in stop_list:
             valid.append(token)
-    return [lemmatizer.lemmatize(token.lower()) for token in valid if (token not in string.punctuation) and (token.encode("ascii", "ignore").decode())]
-
+    
+    result = []
+    for token in valid:
+        if token == "US":
+            result.append(token)
+        elif (token not in string.punctuation) and (token.encode("ascii", "ignore").decode()):
+            result.append(lemmatizer.lemmatize(token.lower()))
+    
+    return result    

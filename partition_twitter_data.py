@@ -38,7 +38,12 @@ FULL_TEXT = "full_text"
 MEDIA = "media"
 URLS = "urls"
 REPLY = "in_reply_to_user_id"
-ID = "id"
+ID = "id_str"
+ID_STR = "id_str"
+LOCATION = "location"
+DESCRIPTION = "description"
+SCREEN_NAME = "screen_name"
+USER = "user"
 
 def process_tweet_file(fpath, fdest):
     '''
@@ -74,6 +79,10 @@ def process_tweet_file(fpath, fdest):
                      RT_STATUS: False}
             score = analyser.polarity_scores(d["full_text"])
             tweet["vader_score"] = score
+            tweet["user_id"] = d[USER][ID_STR]
+            tweet[LOCATION] = d[USER][LOCATION]
+            tweet[DESCRIPTION] = d[USER][DESCRIPTION]
+            tweet[SCREEN_NAME] = d[USER][SCREEN_NAME]
             print(json.dumps(tweet), file=fobj)
             # read the next line of file
             line = json_file.readline()

@@ -42,7 +42,7 @@ if __name__ == "__main__":
 
     directories = sorted(glob(os.path.join(args.input_path, "*/")))
     for d in directories:
-        dir_name = d.split("/")[1]
+        dir_name = d.split("/")[-2]
         print(dir_name)
         result = os.system(f"python3 tune_topics_nmf.py --train_path {d} --dest {args.dest}/{dir_name}") 
         if result:
