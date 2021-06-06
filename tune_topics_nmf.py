@@ -362,7 +362,7 @@ def main():
         with open(doc_path, "w") as fobj:
             writer = csv.writer(fobj)
             # TODO: add document author (username and ID) and link to profile
-            writer.writerow(["Tweet ID", "Weight", "Duplicates", "Tweet Text"])
+            writer.writerow(["Tweet ID", "Weight", "Total Times Tweeted", "Tweet Text"])
             doc_list = docs_by_topic[tid]
             doc_list = sorted(doc_list, key=lambda x: x[1], reverse = True)
             num_valid = 0
